@@ -60,7 +60,6 @@ class Player(GameSprite):
             self.rect.x = self.rect.x-self.speed 
         if keys[K_RIGHT] and self.rect.x < win_width - 80: 
             self.rect.x = self.rect.x+self.speed 
- 
 class Enemy(GameSprite): 
     direction = 'left' 
     def update(self): 
@@ -99,7 +98,10 @@ background = transform.scale(image.load("top_back.jpg"), (win_width, win_height)
 player = Player('кольт.png',90,100, 5, win_height -80, 4) 
 murder = Enemy(murder,110, 100,win_width -80, 280, 2) 
 
- 
+w1 = Wall(0, 0, 0, 200, 300, 200, 10)
+
+walls = sprite.Group()
+
 game = True 
 clock = time.Clock() 
 FPS = 60 
@@ -125,10 +127,11 @@ while game:
     if finish != True: 
         player.update() 
         murder.update()
+        w1.update()
         window.blit(background, (0, 0)) 
         player.reset() 
         murder.reset() 
-        
+        w1.draw_wall()
         '''      
         draw_step()
         
@@ -146,8 +149,10 @@ while game:
             move_left = False
             stepIndex = 0
         '''
-
         
+        if sprite.collide_rect(player, w1):
+            player.speed_x = 0
+            player.speed_y = 0
         if sprite.collide_rect(player, murder):  
             finish = True 
             window.blit(lose, (200, 200)) 
