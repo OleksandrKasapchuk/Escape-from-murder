@@ -36,7 +36,6 @@ def draw_step():
     else:
         window.blit(stationary, (x,y))
 '''       
-    
 class GameSprite(sprite.Sprite): 
     def __init__(self, player_image, size_x, size_y, player_x, player_y, player_speed): 
         super().__init__() 
@@ -60,6 +59,7 @@ class Player(GameSprite):
             self.rect.x = self.rect.x-self.speed 
         if keys[K_RIGHT] and self.rect.x < win_width - 80: 
             self.rect.x = self.rect.x+self.speed 
+        
 class Enemy(GameSprite): 
     direction = 'left' 
     def update(self): 
@@ -87,8 +87,7 @@ class Wall(sprite.Sprite):
         self.rect.y = wall_y 
     def draw_wall(self): 
         window.blit(self.image, (self.rect.x, self.rect.y)) 
- 
- 
+
 win_width = 1200 
 win_height = 700
 window = display.set_mode((win_width, win_height)) 
@@ -96,11 +95,60 @@ display.set_caption("Escape from murder")
 background = transform.scale(image.load("top_back.jpg"), (win_width, win_height)) 
 
 player = Player('кольт.png',90,100, 5, win_height -80, 4) 
-murder = Enemy(murder,110, 100,win_width -80, 280, 2) 
+murder = Enemy(murder,110, 100,win_width -80, 280, 2)
 
-w1 = Wall(0, 0, 0, 200, 300, 200, 10)
+walls_up = []
+w1_up = Wall(0, 0, 0, 300, 140, 10, 340)
+walls_up.append(w1_up)
+w2_up = Wall(0, 0, 0, 0, 350, 300, 10)
+walls_up.append(w2_up)
+w3_up = Wall(0, 0, 0, 300, 600, 10, 150)
+walls_up.append(w3_up)
+w4_up = Wall(0, 0, 0, 800, 340, 10, 230)
+walls_up.append(w4_up)
+w5_up = Wall(0, 0, 0, 805, 365, 130, 10)
+walls_up.append(w5_up)
+w6_up = Wall(0, 0, 0, 1060, 365, 140, 10)
+walls_up.append(w6_up)
+w7_up = Wall(0, 0, 0, 800, 125, 10, 100)
+walls_up.append(w7_up)
+w8_up = Wall(0, 0, 0, 800, 125, 400, 10)
+walls_up.append(w8_up)
 
-walls = sprite.Group()
+walls = []
+
+w1 = Wall(0, 0, 0, 10, 400, 70, 10)
+walls.append(w1)
+w2 = Wall(0, 0, 0, 170, 400, 180, 10)
+walls.append(w2)
+w3 = Wall(0, 0, 0, 430, 400, 180, 10)
+walls.append(w3)
+w4 = Wall(0, 0, 0, 690, 400, 180, 10)
+walls.append(w4)
+w5 = Wall(0, 0, 0, 860, 250, 10, 250)
+walls.append(w5)
+w6 = Wall(0, 0, 0, 860, 250, 900, 10)
+walls.append(w6)
+w7 = Wall(0, 0, 0, 860, 50, 900, 10)
+walls.append(w7)
+w8 = Wall(0, 0, 0, 860, 0, 10, 50)
+walls.append(w8)
+w9 = Wall(0, 0, 0, 430, 0, 10, 150)
+walls.append(w9)
+w10 = Wall(0, 0, 0, 250, 400, 10, 100)
+walls.append(w10)
+w11 = Wall(0, 0, 0, 525, 400, 10, 120)
+walls.append(w11)
+w12 = Wall(0, 0, 0, 525, 510, 150, 10)
+walls.append(w12)
+w13 = Wall(0, 0, 0, 670, 510, 10, 300)
+walls.append(w13)
+w14 = Wall(0, 0, 0, 860, 500, 100, 10)
+walls.append(w14)
+w15 = Wall(0, 0, 0, 1065, 500, 150, 10)
+walls.append(w15)
+w16 = Wall(0, 0, 0, 250, 600, 10, 100)
+walls.append(w16)
 
 game = True 
 clock = time.Clock() 
@@ -111,7 +159,7 @@ floor1 = False
 floor2 = True
 
 mixer.init() 
-mixer.music.load('b_music.mp3') 
+mixer.music.load('Bmusic.mp3') 
 mixer.music.play()
 
 
@@ -119,7 +167,7 @@ font.init()
 font = font.Font(None, 70) 
 win = font.render('YOU WIN!', True, (255, 215, 0)) 
 lose = font.render('YOU LOSE!', True, (255, 0, 0)) 
- 
+
 while game: 
     for e in event.get(): 
         if e.type == QUIT: 
@@ -127,11 +175,16 @@ while game:
     if finish != True: 
         player.update() 
         murder.update()
-        w1.update()
         window.blit(background, (0, 0)) 
         player.reset() 
         murder.reset() 
-        w1.draw_wall()
+        if floor2:
+            for wall in walls_up:
+                wall.draw_wall()
+
+        elif floor1:
+            for wall in walls_up:
+                wall.draw_wall()
         '''      
         draw_step()
         
@@ -150,9 +203,6 @@ while game:
             stepIndex = 0
         '''
         
-        if sprite.collide_rect(player, w1):
-            player.speed_x = 0
-            player.speed_y = 0
         if sprite.collide_rect(player, murder):  
             finish = True 
             window.blit(lose, (200, 200)) 
