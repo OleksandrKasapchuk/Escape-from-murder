@@ -1,8 +1,7 @@
-from pygame import*
+from pygame import *
 import os
-
+from time import sleep
 murder = 'murder.png'
-
 '''
 stationary = image.load(os.path.join('images/Hero', "0.png"))
 
@@ -87,6 +86,12 @@ class Wall(sprite.Sprite):
         self.rect.y = wall_y 
     def draw_wall(self): 
         window.blit(self.image, (self.rect.x, self.rect.y)) 
+d1 = True
+d2 = False
+d3 = False
+d4 = False
+d5 = False
+cover = True
 
 win_width = 1200 
 win_height = 700
@@ -96,6 +101,9 @@ background = transform.scale(image.load("top_back.jpg"), (win_width, win_height)
 
 player = Player('кольт.png',90,100, 5, win_height -80, 4) 
 murder = Enemy(murder,110, 100,win_width -80, 280, 2)
+key1_up = GameSprite("key.png", 65, 25, 1000, 600, 0)
+bed1 = GameSprite("bed.png", 125, 125, 400, 500, 0)
+
 
 walls_up = []
 w1_up = Wall(0, 0, 0, 300, 140, 10, 340)
@@ -153,37 +161,51 @@ walls.append(w16)
 game = True 
 clock = time.Clock() 
 FPS = 60 
+
 finish = False
 
-floor1 = False
-floor2 = True
+floor2 = False
+floor1 = True
 
 mixer.init() 
 mixer.music.load('Bmusic.mp3') 
 mixer.music.play()
 
-
 font.init() 
 font = font.Font(None, 70) 
-win = font.render('YOU WIN!', True, (255, 215, 0)) 
-lose = font.render('YOU LOSE!', True, (255, 0, 0)) 
+
+day1 = font.render("DAY 1", True, (255,0,0))
+day2 = font.render("DAY 2", True, (255,0,0))
+day3 = font.render("DAY 3", True, (255,0,0))
+day4 = font.render("DAY 4", True, (255,0,0))
+day5 = font.render("DAY 5", True, (255,0,0))
 
 while game: 
     for e in event.get(): 
         if e.type == QUIT: 
-            game = False 
-    if finish != True: 
+            game = False
+        elif e.type == KEYDOWN:
+            if e.key == K_SPACE:
+                if sprite.collide_rect(player, bed1):
+                    pl_x = player.rect.x
+                    pl_y = player.rect.y
+                    player = Player('кольт.png',0,0,player.rect.x, player.rect.y, 0) 
+                else:
+                    player = Player('кольт.png',90,100, player.rect.x, player.rect.y, 5)
+    if finish != True:
+
         player.update() 
         murder.update()
         window.blit(background, (0, 0)) 
         player.reset() 
-        murder.reset() 
+        murder.reset()
+        bed1.reset()
         if floor2:
             for wall in walls_up:
                 wall.draw_wall()
-
+            key1_up.reset()
         elif floor1:
-            for wall in walls_up:
+            for wall in walls:
                 wall.draw_wall()
         '''      
         draw_step()
@@ -202,10 +224,42 @@ while game:
             move_left = False
             stepIndex = 0
         '''
+        '''
+        if sprite.collide_rect(player, w1):
+            player.speed *= -1
+            for wall in walls:
+                if sprite.collide_rect(player, wall):
+                    player.speed *= -1
+                else:
+                    player.speed *= -1
+
+        if sprite.collide_rect(player, w1_up):
+            player.speed *= -1
+        '''
         
-        if sprite.collide_rect(player, murder):  
-            finish = True 
-            window.blit(lose, (200, 200)) 
-        
+        if sprite.collide_rect(player, murder):   
+            window.fill((0,0,0))
+            if d1:
+                window.blit(day1, (500, 300))
+                player.rect.x -= 100
+                
+            elif d2:
+                window.blit(day2, (500, 300))
+                player.rect.x -= 100
+                
+            elif d3:
+                window.blit(day3, (500, 300))
+                player.rect.x -= 100
+                
+            elif d4:
+                window.blit(day4, (500, 300))
+                player.rect.x -= 100
+                
+            elif d5:
+                window.blit(day5, (500, 300))
+                player.rect.x -= 100
+                
+        if sprite.collide_rect(player, key1_up):
+            key1 = GameSprite("key.png", 0, 0, 450, 600, 0)
     display.update() 
     clock.tick(FPS)
