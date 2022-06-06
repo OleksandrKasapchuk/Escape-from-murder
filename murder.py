@@ -50,7 +50,7 @@ class GameSprite(sprite.Sprite):
         self.size_x, self.size_y = size_x, size_y 
     def reset(self): 
         window.blit(self.image, (self.rect.x, self.rect.y)) 
- 
+
 class Player(GameSprite): 
     def update(self): 
         keys = key.get_pressed() 
@@ -62,7 +62,22 @@ class Player(GameSprite):
             self.rect.x = self.rect.x-self.speed 
         if keys[K_RIGHT] and self.rect.x < win_width - 80 and move_r: 
             self.rect.x = self.rect.x+self.speed 
-        
+    def collide(self, targets):
+        global move_u, move_d, move_r, move_l
+        if sprite.spritecollide(self, targets, False):
+            if abs(player.rect.top - wall.rect.bottom) < 5:
+                move_u = False
+            if abs(player.rect.bottom - wall.rect.top) < 5:
+                move_d = False
+            if abs(player.rect.left - wall.rect.right) < 5:
+                move_l = False
+            if abs(player.rect.right - wall.rect.left) < 5:
+                move_r = False
+        else:
+            move_u = True
+            move_d = True
+            move_l = True
+            move_r = True
 class Enemy(GameSprite): 
     direction = 'left' 
     def update(self): 
@@ -74,7 +89,7 @@ class Enemy(GameSprite):
             self.rect.x = self.rect.x+self.speed 
         else: 
             self.rect.x = self.rect.x-self.speed
- 
+    
 class Wall(sprite.Sprite): 
     def __init__(self, color_1, color_2, color_3, wall_x, wall_y, wall_w, wall_h): 
         super().__init__() 
@@ -97,7 +112,7 @@ window = display.set_mode((win_width, win_height))
 display.set_caption("Escape from murder") 
 background = transform.scale(image.load("top_back1.jpeg"), (win_width, win_height)) 
 
-player = Player('кольт.png',75,80, 80, win_height -120, 4) 
+player = Player('кольт.png',70,80, 80, win_height -120, 4) 
 murder = Enemy('murder.png',110, 100,win_width -90, 280, 2)
 key1_up = GameSprite("key.png", 65, 25, 1000, 600, 0)
 
@@ -115,6 +130,10 @@ hides.append(bed1)
 bed1_up = GameSprite("bed.png", 125, 185, 0, 360, 0)
 furniture_up.append(bed1_up)
 hides_up.append(bed1_up)
+
+wardrobe = GameSprite('wardrobe.png', 0, 220, 835, 500, 0)
+furniture.append(wardrobe)
+hides.append(wardrobe)
 
 door1 =  Wall(81, 49, 0, 70, 400, 100, 10)
 walls.append(door1)
@@ -175,8 +194,8 @@ FPS = 60
 
 finish = False
 
-floor1 = False
-floor2 = True
+floor2 = False
+floor1 = True
 
 day = 1
 cover = True
@@ -200,14 +219,6 @@ while game:
     for e in event.get(): 
         if e.type == QUIT: 
             game = False
-        elif e.type == KEYDOWN:
-            if e.key == K_SPACE:
-                if sprite.collide_rect(player, bed1_up):
-                    pl_x = player.rect.x
-                    pl_y = player.rect.y
-                    player = Player('кольт.png',0,0,player.rect.x, player.rect.y, 0) 
-                else:
-                    player = Player('кольт.png', 75,80, player.rect.x, player.rect.y, 5)
             
     if finish != True:
         '''
@@ -232,41 +243,29 @@ while game:
             for lox in furniture_up:
                 lox.reset()
             for wall in walls_up:
-                if sprite.spritecollide(player, walls_up, False):
-                    if abs(player.rect.top - wall.rect.bottom) < 5:
-                        move_u = False
-                    if abs(player.rect.bottom - wall.rect.top) < 5:
-                        move_d = False
-                    if abs(player.rect.left - wall.rect.right) < 5:
-                        move_l = False
-                    if abs(player.rect.right - wall.rect.left) < 5:
-                        move_r = False
-                else:
-                    move_u = True
-                    move_d = True
-                    move_l = True
-                    move_r = True
-
+                player.collide(walls_up)
+              
+            if e.type == KEYDOWN:
+                if e.key == K_SPACE:
+                    if sprite.spritecollide(player, hides_up, False):
+                        player = Player('кольт.png',0,0,player.rect.x, player.rect.y, 0) 
+                    else:
+                        player = Player('кольт.png', 75,80, player.rect.x, player.rect.y, 5)
         elif floor1:
             for wall in walls:
                 wall.draw_wall()
             for lox in furniture:
                 lox.reset()
             for wall in walls:
-                if sprite.spritecollide(player, walls, False):
-                    if abs(player.rect.top - wall.rect.bottom) < 5:
-                        move_u = False
-                    if abs(player.rect.bottom - wall.rect.top) < 5:
-                        move_d = False
-                    if abs(player.rect.left - wall.rect.right) < 5:
-                        move_l = False
-                    if abs(player.rect.right - wall.rect.left) < 5:
-                        move_r = False
-                else:
-                    move_u = True
-                    move_d = True
-                    move_l = True
-                    move_r = True
+                player.collide(walls)
+
+            if e.type == KEYDOWN:
+                if e.key == K_SPACE:
+                    if sprite.spritecollide(player, hides, False):
+                        player = Player('кольт.png',0,0,player.rect.x, player.rect.y, 0) 
+                    else:
+                        player = Player('кольт.png', 75,80, player.rect.x, player.rect.y, 5)
+
             
         '''      
         draw_step()
@@ -303,6 +302,8 @@ while game:
         if sprite.collide_rect(player, murder):  
             day += 1 
             scream.play()   
+            player = Player('кольт.png',70,80, 80, win_height -120, 4)
+            floor2 = True
             if day == 2:
                 window.fill((0,0,0))
                 window.blit(day2, (500, 300))
@@ -338,8 +339,7 @@ while game:
             
         if sprite.collide_rect(player, key1_up):
             key_sound.play()
-            key1_up = GameSprite("key.png", 0, 0, 450, 600, 0)
-            
-            
+            key1_up = GameSprite("key.png", 0, 0, 0, 0, 0)
+         
     display.update() 
     clock.tick(FPS)
