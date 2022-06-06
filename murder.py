@@ -92,12 +92,24 @@ window = display.set_mode((win_width, win_height))
 display.set_caption("Escape from murder") 
 background = transform.scale(image.load("top_back1.jpeg"), (win_width, win_height)) 
 
+
 player = Player('кольт.png',75,80, 80, win_height -120, 4) 
 murder = Enemy('murder.png',110, 100,win_width -90, 280, 2)
 key1_up = GameSprite("key.png", 65, 25, 1000, 600, 0)
-bed1 = GameSprite("bed.png", 125, 185, 535, 520, 0)
 
+furniture = []
+furniture_up = []
+walls = []
 walls_up = []
+
+bed1 = GameSprite("bed.png", 125, 185, 535, 520, 0)
+furniture.append(bed1)
+
+bed1_up = GameSprite("bed.png", 125, 185, 0, 500, 0)
+furniture_up.append(bed1_up)
+
+door1 =  Wall(81, 49, 0, 70, 400, 100, 10)
+walls.append(door1)
 
 w1_up = Wall(0, 0, 0, 300, 140, 10, 340)
 walls_up.append(w1_up)
@@ -115,13 +127,6 @@ w7_up = Wall(0, 0, 0, 800, 125, 10, 100)
 walls_up.append(w7_up)
 w8_up = Wall(0, 0, 0, 800, 125, 400, 10)
 walls_up.append(w8_up)
-
-walls = []
-
-doors = []
-
-door1 =  Wall(81, 49, 0, 70, 400, 100, 10)
-doors.append(door1)
 
 w1 = Wall(0, 0, 0, 0, 400, 70, 10)
 walls.append(w1)
@@ -162,16 +167,16 @@ FPS = 60
 
 finish = False
 
-floor1 = False
-floor2 = True
+floor2 = False
+floor1 = True
 
 day = 1
 cover = True
 
 mixer.init() 
 mixer.music.load('Bmusic.mp3') 
-
 mixer.music.play()
+#key_sound = mixer.Sound("key.mp3")
 #scream = mixer.Sound("hz.mp3")
 font.init() 
 font = font.Font(None, 70) 
@@ -182,6 +187,7 @@ day3 = font.render("DAY 3", True, (255,0,0))
 day4 = font.render("DAY 4", True, (255,0,0))
 day5 = font.render("DAY 5", True, (255,0,0))
 lose = font.render("YOU DIED", True, (255,0,0))
+
 while game: 
     for e in event.get(): 
         if e.type == QUIT: 
@@ -216,9 +222,9 @@ while game:
         elif floor1:
             for wall in walls:
                 wall.draw_wall()
-            bed1.reset()
-            for door in doors:
-                door.draw_wall()
+            for lox in furniture:
+                lox.reset()
+            
         '''      
         draw_step()
         
@@ -304,7 +310,7 @@ while game:
             mixer.music.play()
             key1_up = GameSprite("key.png", 0, 0, 450, 600, 0)
             time.delay(500)
-            #mixer.music.load("Bmusic.mp3")
+            mixer.music.load("Bmusic.mp3")
             mixer.music.play()
     display.update() 
     clock.tick(FPS)
