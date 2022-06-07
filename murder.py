@@ -58,9 +58,9 @@ class Player(GameSprite):
             self.rect.y = self.rect.y-self.speed 
         if keys[K_DOWN] and self.rect.y < win_height - 80 and move_d: 
             self.rect.y = self.rect.y+self.speed 
-        if keys[K_LEFT] and self.rect.x > 5 and move_l:
+        if keys[K_LEFT] and self.rect.x > 2 and move_l:
             self.rect.x = self.rect.x-self.speed 
-        if keys[K_RIGHT] and self.rect.x < win_width - 80 and move_r: 
+        if keys[K_RIGHT] and self.rect.x < win_width - 60 and move_r: 
             self.rect.x = self.rect.x+self.speed 
     def collide(self, targets):
         global move_u, move_d, move_r, move_l
@@ -111,11 +111,8 @@ win_width = 1200
 win_height = 700
 window = display.set_mode((win_width, win_height)) 
 display.set_caption("Escape from murder") 
-background = transform.scale(image.load("top_back1.jpeg"), (win_width, win_height)) 
+background = transform.scale(image.load("floor.png"), (win_width, win_height)) 
 
-player = Player('кольт.png',60,80, 80, win_height -120, 4) 
-murder = Enemy('murder.png',110, 100,win_width -90, 280, 2)
-key1_up = GameSprite("key.png", 65, 25, 1000, 600, 0)
 
 furniture = []
 furniture_up = []
@@ -125,6 +122,14 @@ hides = []
 hides_up = []
 refls = []
 refls_up = []
+keys_down = []
+keys_up = []
+
+player = Player('кольт.png',60,80, 80, win_height -120, 4) 
+murder = Enemy('murder.png',110, 100,win_width -90, 280, 2)
+
+key1_up = GameSprite("key.png", 65, 25, 1000, 600, 0)
+keys_up.append(key1_up)
 
 bed1 = GameSprite("bed.png", 125, 185, 535, 520, 0)
 furniture.append(bed1)
@@ -138,8 +143,20 @@ wardrobe = GameSprite('wardrobe.png', 200, 100, 835, 500, 0)
 furniture.append(wardrobe)
 hides.append(wardrobe)
 
+washbashin = GameSprite('washbashin.png', 75, 75, 900, 250, 0)
+furniture.append(washbashin)
+
+bath = GameSprite('bath.png', 200, 100, 1000, 260, 0)
+furniture.append(bath)
+
 door1 =  Wall(81, 49, 0, 70, 400, 100, 10)
 walls.append(door1)
+
+door2 = Wall(81, 49, 0, 1190, 100, 10, 100) 
+walls.append(door2) 
+
+door1_up = Wall(81, 49, 0, 1190, 5, 10, 120) 
+walls_up.append(door1_up)
 
 w1_up = Wall(0, 0, 0, 300, 140, 10, 340)
 walls_up.append(w1_up)
@@ -224,7 +241,19 @@ while game:
     for e in event.get(): 
         if e.type == QUIT: 
             game = False
-            
+        elif e.type == KEYDOWN:
+            if e.key == K_SPACE:
+                if floor1:
+                    if sprite.spritecollide(player, hides, False):
+                        player = Player('кольт.png',0,0,player.rect.x, player.rect.y, 0) 
+                    else:
+                        player = Player('кольт.png', 60,80, player.rect.x, player.rect.y, 5)
+                elif floor2:
+                    if sprite.spritecollide(player, hides_up, False):
+                        player = Player('кольт.png',0,0,player.rect.x, player.rect.y, 0) 
+                    else:
+                        player = Player('кольт.png', 60,80, player.rect.x, player.rect.y, 5)
+                
     if finish != True:
         '''
         if cover:
@@ -241,26 +270,7 @@ while game:
         window.blit(background, (0, 0)) 
         player.reset() 
         murder.reset()
-        if floor2:
-            for wall in walls_up:
-                wall.draw_wall()
-            key1_up.reset()
-            for lox in furniture_up:
-                lox.reset()
-            if add_list_up:
-                for wall in walls_up:
-                    refls_up.append(wall)
-                for lox in furniture_up:
-                    refls_up.append(lox)
-                add_list_up = False
-            player.collide(refls_up)
-            if e.type == KEYDOWN:
-                if e.key == K_SPACE:
-                    if sprite.spritecollide(player, hides_up, False):
-                        player = Player('кольт.png',0,0,player.rect.x, player.rect.y, 0) 
-                    else:
-                        player = Player('кольт.png', 75,80, player.rect.x, player.rect.y, 5)
-        elif floor1:
+        if floor1:
             for wall in walls:
                 wall.draw_wall()
             for lox in furniture:
@@ -272,11 +282,38 @@ while game:
                     refls.append(lox)
                 add_list = False
             player.collide(refls)
-            '''
-            if e.type == KEYDOWN:
-                if e.key == K_SPACE:
-                   pass
-            '''
+            for key_down in keys_down:
+                key_down.reset()
+            if sprite.collide_rect(player, door2): 
+                floor1 = False
+                floor2 = True 
+                player = Player('кольт.png',60,80, 1100, 40, 4)
+        elif floor2:
+            for wall in walls_up:
+                wall.draw_wall()
+            for lox in furniture_up:
+                lox.reset()
+            if add_list_up:
+                for wall in walls_up:
+                    refls_up.append(wall)
+                for lox in furniture_up:
+                    refls_up.append(lox)
+                add_list_up = False
+            for key_up in keys_up:
+                key_up.reset()
+
+            if sprite.collide_rect(player, key1_up):
+                key_sound.play()
+                keys_up.remove(key1_up)
+                key1_up = GameSprite("key.png", 0, 0, 0, 0, 0)
+
+            player.collide(refls_up)
+            if sprite.collide_rect(player, door1_up):
+                floor2 = False 
+                floor1 = True 
+                player = Player('кольт.png',60,80, 1100, 100, 4)
+            
+           
         '''      
         draw_step()
         
@@ -308,11 +345,12 @@ while game:
                 door = Wall(81, 49, 0, door.rect.x, door.rect.y, w_w, w_h)
                 display.update()
         '''
-    
+
         if sprite.collide_rect(player, murder):  
             day += 1 
             scream.play()   
             player = Player('кольт.png',70,80, 80, win_height -120, 4)
+            floor1 = False
             floor2 = True
             if day == 2:
                 window.fill((0,0,0))
@@ -346,11 +384,6 @@ while game:
                 mixer.music.load("last.mp3")
                 mixer.music.play()
                 finish = True
-            
-        if sprite.collide_rect(player, key1_up):
-            key_sound.play()
-            key1_up = GameSprite("key.png", 0, 0, 0, 0, 0)
-            
-            
+
     display.update() 
     clock.tick(FPS)
