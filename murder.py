@@ -68,7 +68,7 @@ class Player(GameSprite):
             if sprite.spritecollide(self, targets, False):
                 if abs(self.rect.top - target.rect.bottom) < 5:
                     move_u = False
-                if abs(self.rect.bottom - target.rect.top) < 5:
+                if abs(self.rect.bottom - target.rect.top) < 4:
                     move_d = False
                 if abs(self.rect.left - target.rect.right) < 5:
                     move_l = False
@@ -113,7 +113,6 @@ window = display.set_mode((win_width, win_height))
 display.set_caption("Escape from murder") 
 background = transform.scale(image.load("floor.png"), (win_width, win_height)) 
 
-
 furniture = []
 furniture_up = []
 walls = []
@@ -124,6 +123,8 @@ refls = []
 refls_up = []
 keys_down = []
 keys_up = []
+doors = []
+doors_up = []
 
 player = Player('кольт.png',60,80, 80, win_height -120, 4) 
 murder = Enemy('murder.png',110, 100,win_width -90, 280, 2)
@@ -139,24 +140,26 @@ bed1_up = GameSprite("bed.png", 125, 185, 0, 360, 0)
 furniture_up.append(bed1_up)
 hides_up.append(bed1_up)
 
-wardrobe = GameSprite('wardrobe.png', 200, 100, 835, 500, 0)
+wardrobe = GameSprite('wardrobe.png', 50, 200, 685, 530, 0)
 furniture.append(wardrobe)
 hides.append(wardrobe)
 
 washbashin = GameSprite('washbashin.png', 75, 75, 900, 250, 0)
 furniture.append(washbashin)
 
-bath = GameSprite('bath.png', 200, 100, 1000, 260, 0)
+bath = GameSprite('bath.png', 185, 100, 1025, 260, 0)
 furniture.append(bath)
 
 door1 =  Wall(81, 49, 0, 70, 400, 100, 10)
-walls.append(door1)
-
+doors.append(door1)
 door2 = Wall(81, 49, 0, 1190, 100, 10, 100) 
-walls.append(door2) 
+doors.append(door2) 
+
+door_main = Wall(81, 49, 0, 0, 200, 10, 100) 
+doors.append(door_main)
 
 door1_up = Wall(81, 49, 0, 1190, 5, 10, 120) 
-walls_up.append(door1_up)
+doors_up.append(door1_up)
 
 w1_up = Wall(0, 0, 0, 300, 140, 10, 340)
 walls_up.append(w1_up)
@@ -236,6 +239,7 @@ day3 = font.render("DAY 3", True, (255,0,0))
 day4 = font.render("DAY 4", True, (255,0,0))
 day5 = font.render("DAY 5", True, (255,0,0))
 lose = font.render("YOU DIED", True, (255,0,0))
+won = font.render("CONGRATULATIONS! YOU ESCAPED!", True, (230,230,0))
 
 while game: 
     for e in event.get(): 
@@ -275,6 +279,8 @@ while game:
                 wall.draw_wall()
             for lox in furniture:
                 lox.reset()
+            for door in doors:
+                door.draw_wall()
             if add_list:
                 for wall in walls:
                     refls.append(wall)
@@ -288,11 +294,22 @@ while game:
                 floor1 = False
                 floor2 = True 
                 player = Player('кольт.png',60,80, 1100, 40, 4)
+
+            if sprite.collide_rect(player, door_main): 
+                window.fill((0,0,0)) 
+                window.blit(won, (150, 300)) 
+                display.update() 
+                mixer.music.load("last.mp3") 
+                mixer.music.play() 
+                finish = True
+
         elif floor2:
             for wall in walls_up:
                 wall.draw_wall()
             for lox in furniture_up:
                 lox.reset()
+            for door in doors_up:
+                door.reset()
             if add_list_up:
                 for wall in walls_up:
                     refls_up.append(wall)
