@@ -64,21 +64,21 @@ class Player(GameSprite):
             self.rect.x = self.rect.x+self.speed 
     def collide(self, targets):
         global move_u, move_d, move_r, move_l
-        
-        if sprite.spritecollide(self, targets, False):
-            if abs(self.rect.top - target.rect.bottom) < 5:
-                move_u = False
-            if abs(self.rect.bottom - target.rect.top) < 5:
-                move_d = False
-            if abs(self.rect.left - target.rect.right) < 5:
-                move_l = False
-            if abs(self.rect.right - target.rect.left) < 5:
-                move_r = False
-        else:
-            move_u = True
-            move_d = True
-            move_l = True
-            move_r = True
+        for target in targets:
+            if sprite.spritecollide(self, targets, False):
+                if abs(self.rect.top - target.rect.bottom) < 5:
+                    move_u = False
+                if abs(self.rect.bottom - target.rect.top) < 5:
+                    move_d = False
+                if abs(self.rect.left - target.rect.right) < 5:
+                    move_l = False
+                if abs(self.rect.right - target.rect.left) < 5:
+                    move_r = False
+            else:
+                move_u = True
+                move_d = True
+                move_l = True
+                move_r = True
 class Enemy(GameSprite): 
     direction = 'left' 
     def update(self): 
@@ -123,6 +123,8 @@ walls = []
 walls_up = []
 hides = []
 hides_up = []
+refls = []
+refls_up = []
 
 bed1 = GameSprite("bed.png", 125, 185, 535, 520, 0)
 furniture.append(bed1)
@@ -198,6 +200,8 @@ finish = False
 floor2 = False
 floor1 = True
 
+add_list = True
+add_list_up = True
 day = 1
 cover = True
 
@@ -205,7 +209,7 @@ mixer.init()
 mixer.music.load('Bmusic.mp3') 
 mixer.music.play()
 key_sound = mixer.Sound("key.ogg")
-scream = mixer.Sound("hz.ogg")
+scream = mixer.Sound("scream.ogg")
 font.init() 
 font = font.Font(None, 70) 
 
@@ -243,10 +247,13 @@ while game:
             key1_up.reset()
             for lox in furniture_up:
                 lox.reset()
-            for wall in walls_up:
-                player.collide(walls_up)
-            for hide in hides_up:
-                player.collide(hides_up)
+            if add_list_up:
+                for wall in walls_up:
+                    refls_up.append(wall)
+                for lox in furniture_up:
+                    refls_up.append(lox)
+                add_list_up = False
+            player.collide(refls_up)
             if e.type == KEYDOWN:
                 if e.key == K_SPACE:
                     if sprite.spritecollide(player, hides_up, False):
@@ -258,15 +265,18 @@ while game:
                 wall.draw_wall()
             for lox in furniture:
                 lox.reset()
-            for wall in walls:
-                player.collide(walls)
-            for hide in hides_up:
-                player.collide(hides)
+            if add_list:
+                for wall in walls:
+                    refls.append(wall)
+                for lox in furniture:
+                    refls.append(lox)
+                add_list = False
+            player.collide(refls)
+            '''
             if e.type == KEYDOWN:
                 if e.key == K_SPACE:
                    pass
-
-            
+            '''
         '''      
         draw_step()
         
