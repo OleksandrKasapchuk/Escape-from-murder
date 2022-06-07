@@ -68,12 +68,16 @@ class Player(GameSprite):
             if sprite.spritecollide(self, targets, False):
                 if abs(self.rect.top - target.rect.bottom) < 5:
                     move_u = False
+                    self.rect.y += 1
                 if abs(self.rect.bottom - target.rect.top) < 4:
                     move_d = False
+                    self.rect.y -= 1
                 if abs(self.rect.left - target.rect.right) < 5:
                     move_l = False
+                    self.rect.x += 1
                 if abs(self.rect.right - target.rect.left) < 5:
                     move_r = False
+                    self.rect.x -= 1
             else:
                 move_u = True
                 move_d = True
@@ -160,6 +164,15 @@ furniture.append(toilet)
 sofa = GameSprite('sofa.png', 250, 80, 685, 615, 0 ) 
 furniture.append(sofa)
 
+table = GameSprite('table.png', 300, 100, 900, 375, 0) 
+furniture_up.append(table)
+
+table_main = GameSprite('table_main.png', 150, 200, 1050, 150, 0) 
+furniture_up.append(table_main)
+
+g_stove = GameSprite('g_stove.png', 100, 100, 810, 375, 0) 
+furniture_up.append(g_stove)
+
 door1 =  Wall(81, 49, 0, 70, 400, 100, 10)
 doors.append(door1)
 door2 = Wall(81, 49, 0, 1190, 100, 10, 100) 
@@ -182,7 +195,7 @@ w4_up = Wall(0, 0, 0, 800, 340, 10, 230)
 walls_up.append(w4_up)
 w5_up = Wall(0, 0, 0, 805, 365, 130, 10)
 walls_up.append(w5_up)
-w6_up = Wall(0, 0, 0, 1060, 365, 140, 10)
+w6_up = Wall(0, 0, 0, 900, 365, 500, 10) 
 walls_up.append(w6_up)
 w7_up = Wall(0, 0, 0, 800, 125, 10, 100)
 walls_up.append(w7_up)
