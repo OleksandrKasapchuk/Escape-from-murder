@@ -107,12 +107,14 @@ class Wall(sprite.Sprite):
     def draw_wall(self): 
         window.blit(self.image, (self.rect.x, self.rect.y)) 
 
+#window
 win_width = 1200 
 win_height = 700
 window = display.set_mode((win_width, win_height)) 
 display.set_caption("Escape from murder") 
 background = transform.scale(image.load("floor.png"), (win_width, win_height)) 
 
+#lists
 furniture = []
 furniture_up = []
 walls = []
@@ -126,12 +128,14 @@ keys_up = []
 doors = []
 doors_up = []
 
+#sprites
 player = Player('кольт.png',60,80, 80, win_height -120, 4) 
 murder = Enemy('murder.png',110, 100,win_width -90, 280, 2)
 
 key1_up = GameSprite("key.png", 65, 25, 1000, 600, 0)
 keys_up.append(key1_up)
 
+#furiture
 bed1 = GameSprite("bed.png", 125, 185, 535, 520, 0)
 furniture.append(bed1)
 hides.append(bed1)
@@ -140,15 +144,18 @@ bed1_up = GameSprite("bed.png", 125, 185, 0, 360, 0)
 furniture_up.append(bed1_up)
 hides_up.append(bed1_up)
 
-wardrobe = GameSprite('wardrobe.png', 200, 90, 265, 620, 0) 
-furniture.append(wardrobe) 
-hides.append(wardrobe)
+wardrobe_up = GameSprite('wardrobe.png', 200, 90, 0, 275, 0) 
+furniture_up.append(wardrobe_up) 
+hides_up.append(wardrobe_up)
 
 washbashin = GameSprite('washbashin.png', 75, 75, 900, 250, 0)
 furniture.append(washbashin)
 
 bath = GameSprite('bath.png', 185, 100, 1025, 260, 0)
 furniture.append(bath)
+
+toilet = GameSprite('toilet.png', 100, 90, 865, 420, 0) 
+furniture.append(toilet)
 
 sofa = GameSprite('sofa.png', 250, 80, 685, 615, 0 ) 
 furniture.append(sofa)
@@ -164,6 +171,7 @@ doors.append(door_main)
 door1_up = Wall(81, 49, 0, 1190, 5, 10, 120) 
 doors_up.append(door1_up)
 
+#walls
 w1_up = Wall(0, 0, 0, 300, 140, 10, 340)
 walls_up.append(w1_up)
 w2_up = Wall(0, 0, 0, 0, 350, 300, 10)
@@ -214,27 +222,29 @@ walls.append(w15)
 w16 = Wall(0, 0, 0, 250, 600, 10, 100)
 walls.append(w16)
 
+#game
 game = True 
 clock = time.Clock() 
 FPS = 60 
 
 finish = False
 
-floor2 = False
-floor1 = True
+floor1 = False
+floor2 = True
 
 add_list = True
 add_list_up = True
 day = 1
 cover = True
 
+#music
 mixer.init() 
 mixer.music.load('Bmusic.mp3') 
 mixer.music.play()
 key_sound = mixer.Sound("key.ogg")
 scream = mixer.Sound("scream.ogg")
 happy = mixer.Sound("happy.ogg")
-
+#text
 font.init() 
 font = font.Font(None, 70) 
 
@@ -316,7 +326,7 @@ while game:
             for lox in furniture_up:
                 lox.reset()
             for door in doors_up:
-                door.reset()
+                door.draw_wall()
             if add_list_up:
                 for wall in walls_up:
                     refls_up.append(wall)
