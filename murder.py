@@ -64,14 +64,15 @@ class Player(GameSprite):
             self.rect.x = self.rect.x+self.speed 
     def collide(self, targets):
         global move_u, move_d, move_r, move_l
+        
         if sprite.spritecollide(self, targets, False):
-            if abs(player.rect.top - wall.rect.bottom) < 5:
+            if abs(self.rect.top - target.rect.bottom) < 5:
                 move_u = False
-            if abs(player.rect.bottom - wall.rect.top) < 5:
+            if abs(self.rect.bottom - target.rect.top) < 5:
                 move_d = False
-            if abs(player.rect.left - wall.rect.right) < 5:
+            if abs(self.rect.left - target.rect.right) < 5:
                 move_l = False
-            if abs(player.rect.right - wall.rect.left) < 5:
+            if abs(self.rect.right - target.rect.left) < 5:
                 move_r = False
         else:
             move_u = True
@@ -112,7 +113,7 @@ window = display.set_mode((win_width, win_height))
 display.set_caption("Escape from murder") 
 background = transform.scale(image.load("top_back1.jpeg"), (win_width, win_height)) 
 
-player = Player('кольт.png',70,80, 80, win_height -120, 4) 
+player = Player('кольт.png',60,80, 80, win_height -120, 4) 
 murder = Enemy('murder.png',110, 100,win_width -90, 280, 2)
 key1_up = GameSprite("key.png", 65, 25, 1000, 600, 0)
 
@@ -131,7 +132,7 @@ bed1_up = GameSprite("bed.png", 125, 185, 0, 360, 0)
 furniture_up.append(bed1_up)
 hides_up.append(bed1_up)
 
-wardrobe = GameSprite('wardrobe.png', 0, 220, 835, 500, 0)
+wardrobe = GameSprite('wardrobe.png', 200, 100, 835, 500, 0)
 furniture.append(wardrobe)
 hides.append(wardrobe)
 
@@ -244,7 +245,8 @@ while game:
                 lox.reset()
             for wall in walls_up:
                 player.collide(walls_up)
-              
+            for hide in hides_up:
+                player.collide(hides_up)
             if e.type == KEYDOWN:
                 if e.key == K_SPACE:
                     if sprite.spritecollide(player, hides_up, False):
@@ -258,13 +260,11 @@ while game:
                 lox.reset()
             for wall in walls:
                 player.collide(walls)
-
+            for hide in hides_up:
+                player.collide(hides)
             if e.type == KEYDOWN:
                 if e.key == K_SPACE:
-                    if sprite.spritecollide(player, hides, False):
-                        player = Player('кольт.png',0,0,player.rect.x, player.rect.y, 0) 
-                    else:
-                        player = Player('кольт.png', 75,80, player.rect.x, player.rect.y, 5)
+                   pass
 
             
         '''      
@@ -340,6 +340,7 @@ while game:
         if sprite.collide_rect(player, key1_up):
             key_sound.play()
             key1_up = GameSprite("key.png", 0, 0, 0, 0, 0)
-         
+            
+            
     display.update() 
     clock.tick(FPS)
