@@ -140,8 +140,8 @@ bed1_up = GameSprite("bed.png", 125, 185, 0, 360, 0)
 furniture_up.append(bed1_up)
 hides_up.append(bed1_up)
 
-wardrobe = GameSprite('wardrobe.png', 50, 200, 685, 530, 0)
-furniture.append(wardrobe)
+wardrobe = GameSprite('wardrobe.png', 200, 90, 265, 620, 0) 
+furniture.append(wardrobe) 
 hides.append(wardrobe)
 
 washbashin = GameSprite('washbashin.png', 75, 75, 900, 250, 0)
@@ -149,6 +149,9 @@ furniture.append(washbashin)
 
 bath = GameSprite('bath.png', 185, 100, 1025, 260, 0)
 furniture.append(bath)
+
+sofa = GameSprite('sofa.png', 250, 80, 685, 615, 0 ) 
+furniture.append(sofa)
 
 door1 =  Wall(81, 49, 0, 70, 400, 100, 10)
 doors.append(door1)
@@ -230,6 +233,8 @@ mixer.music.load('Bmusic.mp3')
 mixer.music.play()
 key_sound = mixer.Sound("key.ogg")
 scream = mixer.Sound("scream.ogg")
+happy = mixer.Sound("happy.ogg")
+
 font.init() 
 font = font.Font(None, 70) 
 
@@ -298,8 +303,10 @@ while game:
             if sprite.collide_rect(player, door_main): 
                 window.fill((0,0,0)) 
                 window.blit(won, (150, 300)) 
-                display.update() 
-                mixer.music.load("last.mp3") 
+                display.update()
+                happy.play()
+                time.delay(3000)
+                mixer.music.load("ending.ogg")
                 mixer.music.play() 
                 finish = True
 
