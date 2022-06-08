@@ -68,16 +68,16 @@ class Player(GameSprite):
             if sprite.spritecollide(self, targets, False):
                 if abs(self.rect.top - target.rect.bottom) < 5:
                     move_u = False
-                    self.rect.y += 1
-                if abs(self.rect.bottom - target.rect.top) < 4:
+                    #self.rect.y += 1
+                if abs(self.rect.bottom - target.rect.top) < 5:
                     move_d = False
-                    self.rect.y -= 1
+                    #self.rect.y -= 1
                 if abs(self.rect.left - target.rect.right) < 5:
                     move_l = False
-                    self.rect.x += 1
+                    #self.rect.x += 1
                 if abs(self.rect.right - target.rect.left) < 5:
                     move_r = False
-                    self.rect.x -= 1
+                    #self.rect.x -= 1
             else:
                 move_u = True
                 move_d = True
@@ -123,8 +123,10 @@ furniture = []
 furniture_up = []
 walls = []
 walls_up = []
-hides = []
-hides_up = []
+#hides = []
+#hides_up = []
+hides = sprite.Group()
+hides_up = sprite.Group()
 refls = []
 refls_up = []
 keys_down = []
@@ -142,15 +144,18 @@ keys_up.append(key1_up)
 #furiture
 bed1 = GameSprite("bed.png", 125, 185, 535, 520, 0)
 furniture.append(bed1)
-hides.append(bed1)
+#hides.append(bed1)
+hides.add(bed1)
 
 bed1_up = GameSprite("bed.png", 125, 185, 0, 360, 0)
 furniture_up.append(bed1_up)
-hides_up.append(bed1_up)
+#hides_up.append(bed1_up)
+hides_up.add(bed1_up)
 
 wardrobe_up = GameSprite('wardrobe.png', 200, 90, 0, 275, 0) 
 furniture_up.append(wardrobe_up) 
-hides_up.append(wardrobe_up)
+#hides_up.append(wardrobe_up)
+hides_up.add(wardrobe_up)
 
 washbashin = GameSprite('washbashin.png', 75, 75, 900, 250, 0)
 furniture.append(washbashin)
@@ -245,6 +250,8 @@ finish = False
 floor1 = False
 floor2 = True
 
+hidden = False
+
 add_list = True
 add_list_up = True
 day = 1
@@ -274,18 +281,18 @@ while game:
         if e.type == QUIT: 
             game = False
         elif e.type == KEYDOWN:
-            if e.key == K_SPACE:
+            if e.key == K_SPACE and not hidden:
+                if floor2:
+                    if sprite.spritecollide(player, hides_up, False):
+                        player = Player('кольт.png',0,0,player.rect.x, player.rect.y, 0)
+                        hidden = True
                 if floor1:
                     if sprite.spritecollide(player, hides, False):
                         player = Player('кольт.png',0,0,player.rect.x, player.rect.y, 0) 
-                    else:
-                        player = Player('кольт.png', 60,80, player.rect.x, player.rect.y, 5)
-                elif floor2:
-                    if sprite.spritecollide(player, hides_up, False):
-                        player = Player('кольт.png',0,0,player.rect.x, player.rect.y, 0) 
-                    else:
-                        player = Player('кольт.png', 60,80, player.rect.x, player.rect.y, 5)
-                
+                        hidden = True
+            else:
+                player = Player('кольт.png',60,80,player.rect.x, player.rect.y, 4)
+                hidden = False
     if finish != True:
         '''
         if cover:
