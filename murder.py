@@ -1,6 +1,6 @@
 from pygame import *
 import os
-
+from random import randint
 move_u = True
 move_d = True
 move_l = True
@@ -83,10 +83,22 @@ class Player(GameSprite):
                 move_d = True
                 move_l = True
                 move_r = True
+
+speed_x = randint(-3,3)
+speed_y = randint(-3,3)
 class Enemy(GameSprite): 
+    def update(self): 
+        self.rect.x += speed_x
+        self.rect.y += speed_y
+    def collide_something(self, targets):
+        global speed_x, speed_y
+        if sprite.spritecollide(self, targets, False) or self.rect.y < 5 or self.rect.y > win_height - 100 or self.rect.x < 3 or self.rect.x > win_width - 110:
+            speed_x = randint(-5,5)
+            speed_y = randint(-5,5)
+            #speed_x *= -1
+    '''
     direction = 'left' 
     def update(self): 
-        '''
         if self.rect.x <= 470: 
             self.direction = 'right' 
         if self.rect.x >= win_width-85: 
@@ -95,7 +107,7 @@ class Enemy(GameSprite):
             self.rect.x = self.rect.x+self.speed 
         else: 
             self.rect.x = self.rect.x-self.speed
-        '''
+    '''
 class Wall(sprite.Sprite): 
     def __init__(self, color_1, color_2, color_3, wall_x, wall_y, wall_w, wall_h): 
         super().__init__() 
@@ -135,7 +147,7 @@ doors_up = []
 
 #sprites
 player = Player('кольт.png',60,80, 80, win_height -120, 4) 
-murder = Enemy('murder.png',110, 100,725,275, 2)
+murder = Enemy('murder.png',110, 100,625,275, 3)
 
 key1_up = GameSprite("key.png", 65, 25, 1000, 600, 0)
 keys_up.append(key1_up)
@@ -330,6 +342,7 @@ while game:
         window.blit(background, (0, 0)) 
         player.reset() 
         murder.reset()
+        
         if floor1:
             for wall in walls:
                 wall.draw_wall()
@@ -344,6 +357,7 @@ while game:
                     refls.append(lox)
                 add_list = False
             player.collide(refls)
+            murder.collide_something(refls)
             for key_down in keys_down:
                 key_down.reset()
             if sprite.collide_rect(player, door_to_up): 
@@ -383,6 +397,7 @@ while game:
                 key1_up = GameSprite("key.png", 0, 0, 0, 0, 0)
 
             player.collide(refls_up)
+            murder.collide_something(refls_up)
             if sprite.collide_rect(player, door_to_down):
                 floor2 = False 
                 floor1 = True 
