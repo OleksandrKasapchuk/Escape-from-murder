@@ -90,12 +90,19 @@ class Enemy(GameSprite):
     def update(self): 
         self.rect.x += speed_x
         self.rect.y += speed_y
+        
     def collide_something(self, targets):
         global speed_x, speed_y
         if sprite.spritecollide(self, targets, False) or self.rect.y < 5 or self.rect.y > win_height - 100 or self.rect.x < 3 or self.rect.x > win_width - 110:
             speed_x = randint(-5,5)
             speed_y = randint(-5,5)
-            #speed_x *= -1
+    def follow(self, target):
+        if abs(self.rect.x - target.rect.x) <= 200 or abs(self.rect.y - target.rect.y) <= 200:
+            global hz_y, hz_x
+            hz_x = (self.rect.x - target.rect.x) / 240
+            hz_y = (self.rect.y - target.rect.y) / 240
+            self.rect.x -= hz_x
+            self.rect.y -= hz_y
     '''
     direction = 'left' 
     def update(self): 
@@ -182,6 +189,9 @@ furniture_up.append(table)
 
 table_main = GameSprite('table_main.png', 150, 200, 1050, 150, 0) 
 furniture_up.append(table_main)
+
+dresser = GameSprite('dresser.png', 150, 100, 135, 370, 0)
+furniture_up.append(dresser)
 
 g_stove = GameSprite('g_stove.png', 100, 100, 810, 375, 0) 
 furniture_up.append(g_stove)
@@ -398,6 +408,7 @@ while game:
 
             player.collide(refls_up)
             murder.collide_something(refls_up)
+            murder.follow(player)
             if sprite.collide_rect(player, door_to_down):
                 floor2 = False 
                 floor1 = True 
@@ -436,7 +447,7 @@ while game:
                 display.update()
         '''
 
-        if sprite.collide_rect(player, murder):  
+        if sprite.collide_rect(player, murder) and not hidden:  
             day += 1 
             scream.play()   
             player = Player('кольт.png',70,80, 80, win_height -120, 4)
