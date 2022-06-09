@@ -352,15 +352,15 @@ while game:
             time.delay(4000)
             cover = False
         '''
-        
         player.update() 
         murder.update()
-        window.blit(background, (0, 0)) 
-        carpet.reset()
+        window.blit(background, (0, 0))
         player.reset() 
         murder.reset()
-        
         if floor1:
+            carpet.reset()
+            player.reset() 
+            murder.reset()
             for wall in walls:
                 wall.draw_wall()
             for lox in furniture:
@@ -375,6 +375,7 @@ while game:
                 add_list = False
             player.collide(refls)
             murder.collide_something(refls)
+
             for key_down in keys_down:
                 key_down.reset()
             if sprite.collide_rect(player, door_to_up): 
@@ -391,8 +392,8 @@ while game:
                 mixer.music.load("ending.ogg")
                 mixer.music.play() 
                 finish = True
-
         elif floor2:
+            
             for wall in walls_up:
                 wall.draw_wall()
             for lox in furniture_up:
@@ -419,9 +420,7 @@ while game:
             if sprite.collide_rect(player, door_to_down):
                 floor2 = False 
                 floor1 = True 
-                player = Player('кольт.png',60,80, 1050, 100, 4)
-            
-           
+                player = Player('кольт.png',60,80, 1050, 100, 4)  
         '''      
         draw_step()
         
@@ -442,8 +441,7 @@ while game:
         '''
         if sprite.collide_rect(player, w1):
             player.rect.y -= 10
-        ''' 
-        
+        '''         
         for door in doors:
             if sprite.collide_rect(player, door):
                 w_w = door.height
@@ -451,7 +449,6 @@ while game:
                 door = Wall(81, 49, 0, door.rect.x, door.rect.y, door.height, door.width)
                 display.update()
         
-
         if sprite.collide_rect(player, murder) and not hidden:  
             day += 1 
             scream.play()   
