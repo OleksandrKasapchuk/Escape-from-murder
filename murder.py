@@ -198,6 +198,9 @@ furniture.append(barrel2)
 box = GameSprite('box.png', 80, 80, 170, 620, 0) 
 furniture.append(box)
 
+rack = GameSprite('rack.png', 250, 90, 190, 0, 0) 
+furniture.append(rack)
+
 table = GameSprite('table.png', 300, 100, 900, 375, 0) 
 furniture_up.append(table)
 
@@ -309,8 +312,8 @@ FPS = 60
 
 finish = False
 
-floor2 = False
-floor1 = True
+floor1 = False
+floor2 = True
 
 hidden = False
 
@@ -318,7 +321,7 @@ add_list = True
 add_list_up = True
 day = 1
 cover = True
-play = False
+play = True
 
 #music
 mixer.init() 
@@ -341,6 +344,7 @@ lose = font1.render("YOU DIED", True, (255,0,0))
 won = font1.render("CONGRATULATIONS! YOU ESCAPED!", True, (230,230,0))
 hint1 = font2.render("USE SPACE TO HIDE, 'E' TO INTERACT WITH THINGS,", True, (255,0,0))
 hint2 = font2.render("W,A,S,D(k_up, k_down, k_left, k_right) TO MOVE. PRESS SPACE TO PLAY",True, (255,0,0))
+
 while game: 
     for e in event.get(): 
         if e.type == QUIT: 
@@ -360,7 +364,7 @@ while game:
                 player.collide(refls)
                 hidden = False
     if finish != True:
-        
+        '''
         if cover:
             window.fill((0,0,0))
             window.blit(hint1, (100,200))
@@ -374,17 +378,13 @@ while game:
                     time.delay(4000)
                     cover = False
                     play = True
-        
+        '''
         if play:
             player.update() 
             murder.update()
             window.blit(background, (0, 0))
-            player.reset() 
-            murder.reset()
             if floor1:
                 carpet.reset()
-                player.reset() 
-                murder.reset()
                 for wall in walls:
                     wall.draw_wall()
                 for lox in furniture:
@@ -402,6 +402,9 @@ while game:
 
                 for key_down in keys_down:
                     key_down.reset()
+                player.reset() 
+                murder.reset()
+
                 if sprite.collide_rect(player, door_to_up): 
                     floor1 = False
                     floor2 = True 
@@ -414,7 +417,7 @@ while game:
                     happy.play()
                     time.delay(3000)
                     mixer.music.load("ending.ogg")
-                    mixer.music.play() 
+                    mixer.music.    play() 
                     finish = True
             elif floor2:
                 for wall in walls_up:
@@ -431,11 +434,14 @@ while game:
                     add_list_up = False
                 for key_up in keys_up:
                     key_up.reset()
-
-                if sprite.collide_rect(player, key1_up):
-                    key_sound.play()
-                    keys_up.remove(key1_up)
-                    key1_up = GameSprite("key.png", 0, 0, 0, 0, 0)
+                player.reset() 
+                murder.reset()
+                if e.type == KEYDOWN:
+                    if e.key == K_e:
+                        if sprite.collide_rect(player, key1_up):
+                            key_sound.play()
+                            keys_up.remove(key1_up)
+                            key1_up = GameSprite("key.png", 0, 0, 0, 0, 0)
 
                 player.collide(refls_up)
                 murder.collide_something(refls_up)
