@@ -54,13 +54,13 @@ class GameSprite(sprite.Sprite):
 class Player(GameSprite): 
     def update(self): 
         keys = key.get_pressed() 
-        if keys[K_w] and self.rect.y > 5 and move_u: 
+        if keys[K_w] or keys[K_UP] and self.rect.y > 5 and move_u: 
             self.rect.y = self.rect.y-self.speed 
-        if keys[K_s] and self.rect.y < win_height - 80 and move_d: 
+        if keys[K_s] or keys[K_DOWN] and self.rect.y < win_height - 80 and move_d: 
             self.rect.y = self.rect.y+self.speed 
-        if keys[K_a] and self.rect.x > 2 and move_l:
+        if keys[K_a] or keys[K_LEFT] and self.rect.x > 2 and move_l:
             self.rect.x = self.rect.x-self.speed 
-        if keys[K_d] and self.rect.x < win_width - 60 and move_r: 
+        if keys[K_d] or keys[K_RIGHT] and self.rect.x < win_width - 60 and move_r: 
             self.rect.x = self.rect.x+self.speed 
     def collide(self, targets):
         global move_u, move_d, move_r, move_l
@@ -189,6 +189,15 @@ carpet = GameSprite('carpet.png', 100, 180, 425, 525, 0)
 table_lr = GameSprite('table_lr.png', 125, 80, 950, 610, 0) 
 furniture.append(table_lr)
 
+barrel1 = GameSprite('barrel.png', 90, 90, 0, 600, 0) 
+furniture.append(barrel1)
+
+barrel2 = GameSprite('barrel.png', 90, 90, 0, 500, 0) 
+furniture.append(barrel2)
+
+box = GameSprite('box.png', 80, 80, 170, 620, 0) 
+furniture.append(box)
+
 table = GameSprite('table.png', 300, 100, 900, 375, 0) 
 furniture_up.append(table)
 
@@ -203,6 +212,9 @@ furniture_up.append(g_stove)
 
 fridge = GameSprite('fridge.png', 100, 100, 1100, 600, 0) 
 furniture_up.append(fridge)
+
+toolbox = GameSprite('toolbox.png', 75, 75, 0, 20, 0) 
+furniture_up.append(toolbox)
 
 #doors
 door1 =  Wall(81, 49, 0, 70, 400, 100, 10)
@@ -297,8 +309,8 @@ FPS = 60
 
 finish = False
 
-floor1 = False
-floor2 = True
+floor2 = False
+floor1 = True
 
 hidden = False
 
@@ -306,7 +318,7 @@ add_list = True
 add_list_up = True
 day = 1
 cover = True
-play = True
+play = False
 
 #music
 mixer.init() 
@@ -318,7 +330,7 @@ happy = mixer.Sound("happy.ogg")
 #text
 font.init() 
 font1 = font.Font(None, 70) 
-font2 = font.Font(None, 50) 
+font2 = font.Font(None, 49) 
 
 day1 = font1.render("DAY 1", True, (255,0,0))
 day2 = font1.render("DAY 2", True, (255,0,0))
@@ -328,7 +340,7 @@ day5 = font1.render("DAY 5", True, (255,0,0))
 lose = font1.render("YOU DIED", True, (255,0,0))
 won = font1.render("CONGRATULATIONS! YOU ESCAPED!", True, (230,230,0))
 hint1 = font2.render("USE SPACE TO HIDE, 'E' TO INTERACT WITH THINGS,", True, (255,0,0))
-hint2 = font2.render("W,A,S,D TO MOVE. PRESS SPACE TO PLAY",True, (255,0,0))
+hint2 = font2.render("W,A,S,D(k_up, k_down, k_left, k_right) TO MOVE. PRESS SPACE TO PLAY",True, (255,0,0))
 while game: 
     for e in event.get(): 
         if e.type == QUIT: 
@@ -339,21 +351,20 @@ while game:
                     if sprite.spritecollide(player, hides_up, False):
                         player = Player('кольт.png',0,0,player.rect.x, player.rect.y, 0)
                         hidden = True
-                        player.collide(refls_up)
                 if floor1:
                     if sprite.spritecollide(player, hides, False):
                         player = Player('кольт.png',0,0,player.rect.x, player.rect.y, 0) 
                         hidden = True
-                        player.collide(refls)
             else:
                 player = Player('кольт.png',60,80,player.rect.x, player.rect.y, 4)
+                player.collide(refls)
                 hidden = False
     if finish != True:
-        '''
+        
         if cover:
             window.fill((0,0,0))
             window.blit(hint1, (100,200))
-            window.blit(hint2, (200,250))
+            window.blit(hint2, (10,250))
             display.update()
             if e.type == KEYDOWN:
                 if e.key == K_SPACE:
@@ -363,7 +374,7 @@ while game:
                     time.delay(4000)
                     cover = False
                     play = True
-        '''
+        
         if play:
             player.update() 
             murder.update()
