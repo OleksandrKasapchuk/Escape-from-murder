@@ -6,6 +6,12 @@ move_d = True
 move_l = True
 move_r = True
 
+move_u_m = True
+move_d_m = True
+move_l_m = True
+move_r_m = True
+moving_x = False
+moving_y = False
 '''
 stationary = image.load(os.path.join('images/Hero', "0.png"))
 
@@ -83,38 +89,49 @@ class Player(GameSprite):
                 move_d = True
                 move_l = True
                 move_r = True
-
-speed_x = randint(-3,3)
-speed_y = randint(-3,3)
 class Enemy(GameSprite): 
-    def update(self): 
-        self.rect.x += speed_x
-        self.rect.y += speed_y
-        
+    def update(self, target): 
+        global moving_x, moving_y
+        if abs(self.rect.x - target.rect.x) <= 200 and abs(self.rect.y - target.rect.y) <= 200 and not hidden:
+            if self.rect.x != target.rect.x:
+                moving_x = True
+            if self.rect.y != target.rect.y:
+                moving_y = True
+        if moving_x:
+            if self.rect.x - target.rect.x <= 0:
+                self.rect.x += self.speed
+            if self.rect.x - target.rect.x >= 0:
+                self.rect.x -= self.speed
+        if moving_y:
+            if self.rect.y - target.rect.y <= 0:
+                self.rect.y += self.speed
+            if self.rect.y - target.rect.y >= 0:
+                self.rect.y -= self.speed
+        if target.rect.x == self.rect.x:
+            moving_x = False
+        if target.rect.y == self.rect.y:
+            moving_y = False
     def collide_something(self, targets):
-        global speed_x, speed_y
-        if sprite.spritecollide(self, targets, False) or self.rect.y < 5 or self.rect.y > win_height - 100 or self.rect.x < 3 or self.rect.x > win_width - 110:
-            speed_x = randint(-5,5)
-            speed_y = randint(-5,5)
-    def follow(self, target):
-        if abs(self.rect.x - target.rect.x) <= 200 or abs(self.rect.y - target.rect.y) <= 200:
-            global hz_y, hz_x
-            hz_x = (self.rect.x - target.rect.x) / 240
-            hz_y = (self.rect.y - target.rect.y) / 240
-            self.rect.x -= hz_x
-            self.rect.y -= hz_y
-    '''
-    direction = 'left' 
-    def update(self): 
-        if self.rect.x <= 470: 
-            self.direction = 'right' 
-        if self.rect.x >= win_width-85: 
-            self.direction = 'left' 
-        if self.direction == 'right': 
-            self.rect.x = self.rect.x+self.speed 
-        else: 
-            self.rect.x = self.rect.x-self.speed
-    '''
+        global move_u_m, move_d_m, move_r_m, move_l_m
+        for target in targets:
+            if sprite.spritecollide(self, targets, False):
+                if abs(self.rect.top - target.rect.bottom) < 4:
+                    move_u_m = False
+                    self.rect.y += 1
+                if abs(self.rect.bottom - target.rect.top) < 4:
+                    move_d_m = False
+                    self.rect.y -= 1
+                if abs(self.rect.left - target.rect.right) < 4:
+                    move_l_m = False
+                    self.rect.x += 1
+                if abs(self.rect.right - target.rect.left) < 4:
+                    move_r_m = False
+                    self.rect.x -= 1
+            else:
+                move_u_m = True
+                move_d_m = True
+                move_l_m = True
+                move_r_m = True
 class Wall(sprite.Sprite): 
     def __init__(self, color_1, color_2, color_3, wall_x, wall_y, wall_w, wall_h): 
         super().__init__() 
@@ -154,11 +171,23 @@ doors_up = []
 
 #sprites
 player = Player('кольт.png',60,80, 80, win_height -120, 4) 
-murder = Enemy('murder.png',110, 100,625,275, 3)
+murder = Enemy('murder.png',50, 45,625,275, 2)
 
+#keys
 key1_up = GameSprite("key.png", 65, 25, 1000, 600, 0)
 keys_up.append(key1_up)
 
+key2_up = GameSprite("key.png", 65, 25, 100, 20, 0) 
+keys_up.append(key2_up) 
+ 
+key1_down = GameSprite("key.png", 65, 25, 180, 450, 0) 
+keys_down.append(key1_down) 
+ 
+key2_down = GameSprite("key.png", 65, 25, 1120, 400, 0) 
+keys_down.append(key2_down) 
+ 
+key3_down = GameSprite("key.png", 65, 25, 460, 20, 0) 
+keys_down.append(key3_down)
 #furiture
 bed1 = GameSprite("bed.png", 125, 185, 535, 520, 0)
 furniture.append(bed1)
@@ -312,8 +341,8 @@ FPS = 60
 
 finish = False
 
-floor1 = False
-floor2 = True
+floor2 = False
+floor1 = True
 
 hidden = False
 
@@ -381,7 +410,7 @@ while game:
         '''
         if play:
             player.update() 
-            murder.update()
+            murder.update(player)
             window.blit(background, (0, 0))
             if floor1:
                 carpet.reset()
@@ -397,14 +426,26 @@ while game:
                     for lox in furniture:
                         refls.append(lox)
                     add_list = False
-                player.collide(refls)
-                murder.collide_something(refls)
-
                 for key_down in keys_down:
                     key_down.reset()
+                player.collide(refls)
+                murder.collide_something(refls)
                 player.reset() 
                 murder.reset()
-
+                if e.type == KEYDOWN:
+                    if e.key == K_e:
+                        if sprite.collide_rect(player, key1_down): 
+                            key_sound.play() 
+                            keys_down.remove(key1_down) 
+                            key1_down = GameSprite("key.png", 0, 0, 0, 0, 0) 
+                        if sprite.collide_rect(player, key2_down): 
+                            key_sound.play() 
+                            keys_down.remove(key2_down) 
+                            key2_down = GameSprite("key.png", 0, 0, 0, 0, 0) 
+                if sprite.collide_rect(player, key3_down): 
+                    key_sound.play() 
+                    keys_down.remove(key3_down) 
+                    key3_down = GameSprite("key.png", 0, 0, 0, 0, 0)
                 if sprite.collide_rect(player, door_to_up): 
                     floor1 = False
                     floor2 = True 
@@ -442,10 +483,12 @@ while game:
                             key_sound.play()
                             keys_up.remove(key1_up)
                             key1_up = GameSprite("key.png", 0, 0, 0, 0, 0)
-
+                        if sprite.collide_rect(player, key2_up): 
+                            key_sound.play() 
+                            keys_up.remove(key2_up) 
+                            key2_up = GameSprite("key.png", 0, 0, 0, 0, 0)
                 player.collide(refls_up)
                 murder.collide_something(refls_up)
-                murder.follow(player)
                 if sprite.collide_rect(player, door_to_down):
                     floor2 = False 
                     floor1 = True 
@@ -466,25 +509,20 @@ while game:
                 move_right = False
                 move_left = False
                 stepIndex = 0
+            ''' 
             '''
+            if sprite.collide_rect(player, door1):
+                door1 = Wall(81, 49, 0, door1.rect.x, door1.rect.y, door1.height, door1.width)
+                display.update()
+                time.delay(2000)
             '''
-            if sprite.collide_rect(player, w1):
-                player.rect.y -= 10
-            '''         
-            for door in doors:
-                if sprite.collide_rect(player, door):
-                    w_w = door.height
-                    w_h = door.width
-                    door = Wall(81, 49, 0, door.rect.x, door.rect.y, door.height, door.width)
-                    display.update()
-            
             if sprite.collide_rect(player, murder) and not hidden:  
                 day += 1 
                 scream.play()   
                 player = Player('кольт.png',70,80, 80, win_height -120, 4)
                 floor1 = False
                 floor2 = True
-                murder = Enemy('murder.png',110, 100,625,275, 3)
+                murder = Enemy('murder.png',110, 100,625,275, 2)
                 if day == 2:
                     window.fill((0,0,0))
                     window.blit(day2, (500, 300))
