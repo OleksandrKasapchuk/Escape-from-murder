@@ -201,6 +201,9 @@ furniture_up.append(dresser)
 g_stove = GameSprite('g_stove.png', 100, 100, 810, 375, 0) 
 furniture_up.append(g_stove)
 
+fridge = GameSprite('fridge.png', 100, 100, 1100, 600, 0) 
+furniture_up.append(fridge)
+
 #doors
 door1 =  Wall(81, 49, 0, 70, 400, 100, 10)
 doors.append(door1)
@@ -294,8 +297,8 @@ FPS = 60
 
 finish = False
 
-floor2 = False
-floor1 = True
+floor1 = False
+floor2 = True
 
 hidden = False
 
@@ -455,6 +458,7 @@ while game:
             player = Player('кольт.png',70,80, 80, win_height -120, 4)
             floor1 = False
             floor2 = True
+            murder = Enemy('murder.png',110, 100,625,275, 3)
             if day == 2:
                 window.fill((0,0,0))
                 window.blit(day2, (500, 300))
