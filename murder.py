@@ -54,13 +54,13 @@ class GameSprite(sprite.Sprite):
 class Player(GameSprite): 
     def update(self): 
         keys = key.get_pressed() 
-        if keys[K_UP] and self.rect.y > 5 and move_u: 
+        if keys[K_w] and self.rect.y > 5 and move_u: 
             self.rect.y = self.rect.y-self.speed 
-        if keys[K_DOWN] and self.rect.y < win_height - 80 and move_d: 
+        if keys[K_s] and self.rect.y < win_height - 80 and move_d: 
             self.rect.y = self.rect.y+self.speed 
-        if keys[K_LEFT] and self.rect.x > 2 and move_l:
+        if keys[K_a] and self.rect.x > 2 and move_l:
             self.rect.x = self.rect.x-self.speed 
-        if keys[K_RIGHT] and self.rect.x < win_width - 60 and move_r: 
+        if keys[K_d] and self.rect.x < win_width - 60 and move_r: 
             self.rect.x = self.rect.x+self.speed 
     def collide(self, targets):
         global move_u, move_d, move_r, move_l
@@ -306,6 +306,7 @@ add_list = True
 add_list_up = True
 day = 1
 cover = True
+play = True
 
 #music
 mixer.init() 
@@ -316,16 +317,18 @@ scream = mixer.Sound("scream.ogg")
 happy = mixer.Sound("happy.ogg")
 #text
 font.init() 
-font = font.Font(None, 70) 
+font1 = font.Font(None, 70) 
+font2 = font.Font(None, 50) 
 
-day1 = font.render("DAY 1", True, (255,0,0))
-day2 = font.render("DAY 2", True, (255,0,0))
-day3 = font.render("DAY 3", True, (255,0,0))
-day4 = font.render("DAY 4", True, (255,0,0))
-day5 = font.render("DAY 5", True, (255,0,0))
-lose = font.render("YOU DIED", True, (255,0,0))
-won = font.render("CONGRATULATIONS! YOU ESCAPED!", True, (230,230,0))
-
+day1 = font1.render("DAY 1", True, (255,0,0))
+day2 = font1.render("DAY 2", True, (255,0,0))
+day3 = font1.render("DAY 3", True, (255,0,0))
+day4 = font1.render("DAY 4", True, (255,0,0))
+day5 = font1.render("DAY 5", True, (255,0,0))
+lose = font1.render("YOU DIED", True, (255,0,0))
+won = font1.render("CONGRATULATIONS! YOU ESCAPED!", True, (230,230,0))
+hint1 = font2.render("USE SPACE TO HIDE, 'E' TO INTERACT WITH THINGS,", True, (255,0,0))
+hint2 = font2.render("W,A,S,D TO MOVE. PRESS SPACE TO PLAY",True, (255,0,0))
 while game: 
     for e in event.get(): 
         if e.type == QUIT: 
@@ -349,148 +352,154 @@ while game:
         '''
         if cover:
             window.fill((0,0,0))
-            window.blit(day1, (500, 300))
-            player.rect.x -= 100
+            window.blit(hint1, (100,200))
+            window.blit(hint2, (200,250))
             display.update()
-            time.delay(4000)
-            cover = False
+            if e.type == KEYDOWN:
+                if e.key == K_SPACE:
+                    window.fill((0,0,0))
+                    window.blit(day1, (500, 300))
+                    display.update()
+                    time.delay(4000)
+                    cover = False
+                    play = True
         '''
-        player.update() 
-        murder.update()
-        window.blit(background, (0, 0))
-        player.reset() 
-        murder.reset()
-        if floor1:
-            carpet.reset()
+        if play:
+            player.update() 
+            murder.update()
+            window.blit(background, (0, 0))
             player.reset() 
             murder.reset()
-            for wall in walls:
-                wall.draw_wall()
-            for lox in furniture:
-                lox.reset()
-            for door in doors:
-                door.draw_wall()
-            if add_list:
+            if floor1:
+                carpet.reset()
+                player.reset() 
+                murder.reset()
                 for wall in walls:
-                    refls.append(wall)
+                    wall.draw_wall()
                 for lox in furniture:
-                    refls.append(lox)
-                add_list = False
-            player.collide(refls)
-            murder.collide_something(refls)
+                    lox.reset()
+                for door in doors:
+                    door.draw_wall()
+                if add_list:
+                    for wall in walls:
+                        refls.append(wall)
+                    for lox in furniture:
+                        refls.append(lox)
+                    add_list = False
+                player.collide(refls)
+                murder.collide_something(refls)
 
-            for key_down in keys_down:
-                key_down.reset()
-            if sprite.collide_rect(player, door_to_up): 
-                floor1 = False
-                floor2 = True 
-                player = Player('кольт.png',60,80, 1050, 40, 4)
+                for key_down in keys_down:
+                    key_down.reset()
+                if sprite.collide_rect(player, door_to_up): 
+                    floor1 = False
+                    floor2 = True 
+                    player = Player('кольт.png',60,80, 1050, 40, 4)
 
-            if sprite.collide_rect(player, door_main): 
-                window.fill((0,0,0)) 
-                window.blit(won, (150, 300)) 
-                display.update()
-                happy.play()
-                time.delay(3000)
-                mixer.music.load("ending.ogg")
-                mixer.music.play() 
-                finish = True
-        elif floor2:
-            
-            for wall in walls_up:
-                wall.draw_wall()
-            for lox in furniture_up:
-                lox.reset()
-            for door in doors_up:
-                door.draw_wall()
-            if add_list_up:
+                if sprite.collide_rect(player, door_main): 
+                    window.fill((0,0,0)) 
+                    window.blit(won, (150, 300)) 
+                    display.update()
+                    happy.play()
+                    time.delay(3000)
+                    mixer.music.load("ending.ogg")
+                    mixer.music.play() 
+                    finish = True
+            elif floor2:
                 for wall in walls_up:
-                    refls_up.append(wall)
+                    wall.draw_wall()
                 for lox in furniture_up:
-                    refls_up.append(lox)
-                add_list_up = False
-            for key_up in keys_up:
-                key_up.reset()
+                    lox.reset()
+                for door in doors_up:
+                    door.draw_wall()
+                if add_list_up:
+                    for wall in walls_up:
+                        refls_up.append(wall)
+                    for lox in furniture_up:
+                        refls_up.append(lox)
+                    add_list_up = False
+                for key_up in keys_up:
+                    key_up.reset()
 
-            if sprite.collide_rect(player, key1_up):
-                key_sound.play()
-                keys_up.remove(key1_up)
-                key1_up = GameSprite("key.png", 0, 0, 0, 0, 0)
+                if sprite.collide_rect(player, key1_up):
+                    key_sound.play()
+                    keys_up.remove(key1_up)
+                    key1_up = GameSprite("key.png", 0, 0, 0, 0, 0)
 
-            player.collide(refls_up)
-            murder.collide_something(refls_up)
-            murder.follow(player)
-            if sprite.collide_rect(player, door_to_down):
-                floor2 = False 
-                floor1 = True 
-                player = Player('кольт.png',60,80, 1050, 100, 4)  
-        '''      
-        draw_step()
-        
-        keyPressed = pygame.key.get_pressed()
-        if keyPressed[pygame.K_LEFT]  and x > 0:
-            x -= step*2
-            move_left = True
-            move_right = False
-        elif keyPressed[pygame.K_RIGHT]  and x < width:
-            x +=step*2
-            move_left = False
-            move_right = True
-        else:
-            move_right = False
-            move_left = False
-            stepIndex = 0
-        '''
-        '''
-        if sprite.collide_rect(player, w1):
-            player.rect.y -= 10
-        '''         
-        for door in doors:
-            if sprite.collide_rect(player, door):
-                w_w = door.height
-                w_h = door.width
-                door = Wall(81, 49, 0, door.rect.x, door.rect.y, door.height, door.width)
-                display.update()
-        
-        if sprite.collide_rect(player, murder) and not hidden:  
-            day += 1 
-            scream.play()   
-            player = Player('кольт.png',70,80, 80, win_height -120, 4)
-            floor1 = False
-            floor2 = True
-            murder = Enemy('murder.png',110, 100,625,275, 3)
-            if day == 2:
-                window.fill((0,0,0))
-                window.blit(day2, (500, 300))
-                player.rect.x -= 100
-                display.update()
-                time.delay(4000)
-                
-            elif day == 3:
-                window.fill((0,0,0))
-                window.blit(day3, (500, 300))
-                player.rect.x -= 100
-                display.update()
-                time.delay(4000)
-            elif day == 4:
-                window.fill((0,0,0))
-                window.blit(day4, (500, 300))
-                player.rect.x -= 100
-                display.update()
-                time.delay(4000)
-            elif day == 5:
-                window.fill((0,0,0))
-                window.blit(day5, (500, 300))
-                player.rect.x -= 100
-                display.update()
-                time.delay(4000)
-            elif day == 6:
-                window.fill((0,0,0))
-                window.blit(lose, (500, 300))
-                display.update()
-                mixer.music.load("last.mp3")
-                mixer.music.play()
-                finish = True
+                player.collide(refls_up)
+                murder.collide_something(refls_up)
+                murder.follow(player)
+                if sprite.collide_rect(player, door_to_down):
+                    floor2 = False 
+                    floor1 = True 
+                    player = Player('кольт.png',60,80, 1050, 100, 4)  
+            '''      
+            draw_step()
+            
+            keyPressed = pygame.key.get_pressed()
+            if keyPressed[pygame.K_LEFT]  and x > 0:
+                x -= step*2
+                move_left = True
+                move_right = False
+            elif keyPressed[pygame.K_RIGHT]  and x < width:
+                x +=step*2
+                move_left = False
+                move_right = True
+            else:
+                move_right = False
+                move_left = False
+                stepIndex = 0
+            '''
+            '''
+            if sprite.collide_rect(player, w1):
+                player.rect.y -= 10
+            '''         
+            for door in doors:
+                if sprite.collide_rect(player, door):
+                    w_w = door.height
+                    w_h = door.width
+                    door = Wall(81, 49, 0, door.rect.x, door.rect.y, door.height, door.width)
+                    display.update()
+            
+            if sprite.collide_rect(player, murder) and not hidden:  
+                day += 1 
+                scream.play()   
+                player = Player('кольт.png',70,80, 80, win_height -120, 4)
+                floor1 = False
+                floor2 = True
+                murder = Enemy('murder.png',110, 100,625,275, 3)
+                if day == 2:
+                    window.fill((0,0,0))
+                    window.blit(day2, (500, 300))
+                    player.rect.x -= 100
+                    display.update()
+                    time.delay(4000)
+                    
+                elif day == 3:
+                    window.fill((0,0,0))
+                    window.blit(day3, (500, 300))
+                    player.rect.x -= 100
+                    display.update()
+                    time.delay(4000)
+                elif day == 4:
+                    window.fill((0,0,0))
+                    window.blit(day4, (500, 300))
+                    player.rect.x -= 100
+                    display.update()
+                    time.delay(4000)
+                elif day == 5:
+                    window.fill((0,0,0))
+                    window.blit(day5, (500, 300))
+                    player.rect.x -= 100
+                    display.update()
+                    time.delay(4000)
+                elif day == 6:
+                    window.fill((0,0,0))
+                    window.blit(lose, (500, 300))
+                    display.update()
+                    mixer.music.load("last.mp3")
+                    mixer.music.play()
+                    finish = True
 
-    display.update() 
-    clock.tick(FPS)
+        display.update() 
+        clock.tick(FPS)
