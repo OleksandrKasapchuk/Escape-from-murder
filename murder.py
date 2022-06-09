@@ -184,6 +184,11 @@ furniture.append(toilet)
 sofa = GameSprite('sofa.png', 250, 80, 685, 615, 0 ) 
 furniture.append(sofa)
 
+carpet = GameSprite('carpet.png', 100, 180, 425, 525, 0) 
+
+table_lr = GameSprite('table_lr.png', 125, 80, 950, 610, 0) 
+furniture.append(table_lr)
+
 table = GameSprite('table.png', 300, 100, 900, 375, 0) 
 furniture_up.append(table)
 
@@ -289,8 +294,8 @@ FPS = 60
 
 finish = False
 
-floor1 = False
-floor2 = True
+floor2 = False
+floor1 = True
 
 hidden = False
 
@@ -347,9 +352,11 @@ while game:
             time.delay(4000)
             cover = False
         '''
+        
         player.update() 
         murder.update()
         window.blit(background, (0, 0)) 
+        carpet.reset()
         player.reset() 
         murder.reset()
         
@@ -434,18 +441,16 @@ while game:
         '''
         '''
         if sprite.collide_rect(player, w1):
-        
-            
             player.rect.y -= 10
         ''' 
-        '''
+        
         for door in doors:
             if sprite.collide_rect(player, door):
                 w_w = door.height
                 w_h = door.width
-                door = Wall(81, 49, 0, door.rect.x, door.rect.y, w_w, w_h)
+                door = Wall(81, 49, 0, door.rect.x, door.rect.y, door.height, door.width)
                 display.update()
-        '''
+        
 
         if sprite.collide_rect(player, murder) and not hidden:  
             day += 1 
