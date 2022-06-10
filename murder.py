@@ -92,25 +92,26 @@ class Player(GameSprite):
 class Enemy(GameSprite): 
     def update(self, target): 
         global moving_x, moving_y
-        if abs(self.rect.x - target.rect.x) <= 200 and abs(self.rect.y - target.rect.y) <= 200 and not hidden:
-            if self.rect.x != target.rect.x:
-                moving_x = True
-            if self.rect.y != target.rect.y:
-                moving_y = True
-        if moving_x:
-            if self.rect.x - target.rect.x <= 0:
-                self.rect.x += self.speed
-            if self.rect.x - target.rect.x >= 0:
-                self.rect.x -= self.speed
-        if moving_y:
-            if self.rect.y - target.rect.y <= 0:
-                self.rect.y += self.speed
-            if self.rect.y - target.rect.y >= 0:
-                self.rect.y -= self.speed
-        if target.rect.x == self.rect.x:
-            moving_x = False
-        if target.rect.y == self.rect.y:
-            moving_y = False
+        if not hidden:
+            if abs(self.rect.x - target.rect.x) <= 200 and abs(self.rect.y - target.rect.y) <= 200:
+                if self.rect.x != target.rect.x:
+                    moving_x = True
+                if self.rect.y != target.rect.y:
+                    moving_y = True
+            if moving_x:
+                if self.rect.x - target.rect.x <= 0:
+                    self.rect.x += self.speed
+                if self.rect.x - target.rect.x >= 0:
+                    self.rect.x -= self.speed
+            if moving_y:
+                if self.rect.y - target.rect.y <= 0:
+                    self.rect.y += self.speed
+                if self.rect.y - target.rect.y >= 0:
+                    self.rect.y -= self.speed
+            if target.rect.x == self.rect.x:
+                moving_x = False
+            if target.rect.y == self.rect.y:
+                moving_y = False
     def collide_something(self, targets):
         global move_u_m, move_d_m, move_r_m, move_l_m
         for target in targets:
@@ -522,7 +523,9 @@ while game:
                 player = Player('кольт.png',70,80, 80, win_height -120, 4)
                 floor1 = False
                 floor2 = True
-                murder = Enemy('murder.png',110, 100,625,275, 2)
+                murder = Enemy('murder.png',50, 45,625,275, 2)
+                moving_x = False
+                moving_y = False
                 if day == 2:
                     window.fill((0,0,0))
                     window.blit(day2, (500, 300))
