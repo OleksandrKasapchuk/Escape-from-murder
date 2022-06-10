@@ -112,6 +112,13 @@ class Enemy(GameSprite):
                 moving_x = False
             if target.rect.y == self.rect.y:
                 moving_y = False
+        '''
+        else:
+            self.speed = randint(-1,1)
+            self.rect.x -= self.speed
+            self.speed *= randint(-1,1)
+            self.rect.y -= self.speed
+        '''
     def collide_something(self, targets):
         global move_u_m, move_d_m, move_r_m, move_l_m
         for target in targets:
@@ -177,18 +184,24 @@ murder = Enemy('murder.png',50, 45,625,275, 2)
 #keys
 key1_up = GameSprite("key.png", 65, 25, 1000, 600, 0)
 keys_up.append(key1_up)
+have_key1_up = False
 
 key2_up = GameSprite("key.png", 65, 25, 100, 20, 0) 
 keys_up.append(key2_up) 
- 
+have_key2_up = False
+
 key1_down = GameSprite("key.png", 65, 25, 180, 450, 0) 
 keys_down.append(key1_down) 
- 
+have_key1_down = False
+
 key2_down = GameSprite("key.png", 65, 25, 1120, 400, 0) 
 keys_down.append(key2_down) 
- 
+have_key2_down = False
+
 key3_down = GameSprite("key.png", 65, 25, 460, 20, 0) 
 keys_down.append(key3_down)
+have_key3_down = False
+
 #furiture
 bed1 = GameSprite("bed.png", 125, 185, 535, 520, 0)
 furniture.append(bed1)
@@ -342,17 +355,17 @@ FPS = 60
 
 finish = False
 
-floor2 = False
-floor1 = True
+floor1 = False
+floor2 = True
 
 hidden = False
-
+language = "english"
 add_list = True
 add_list_up = True
 day = 1
 cover = True
-play = True
-
+play = False
+choose = False
 #music
 mixer.init() 
 mixer.music.load('Bmusic.mp3') 
@@ -363,8 +376,10 @@ happy = mixer.Sound("happy.ogg")
 #text
 font.init() 
 font1 = font.Font(None, 70) 
-font2 = font.Font(None, 49) 
+font2 = font.Font(None, 45) 
 
+choise = font1.render("CHOOSE THE LANGUAGE", True, (255,0,0))
+choise2 = font1.render("1 - ENGLISH, 2 - УКРАЇНСЬКА", True, (255,0,0))
 day1 = font1.render("DAY 1", True, (255,0,0))
 day2 = font1.render("DAY 2", True, (255,0,0))
 day3 = font1.render("DAY 3", True, (255,0,0))
@@ -372,9 +387,20 @@ day4 = font1.render("DAY 4", True, (255,0,0))
 day5 = font1.render("DAY 5", True, (255,0,0))
 lose = font1.render("YOU DIED", True, (255,0,0))
 won = font1.render("CONGRATULATIONS! YOU ESCAPED!", True, (230,230,0))
+
+day1_ua = font1.render("ДЕНЬ 1", True, (255,0,0))
+day2_ua = font1.render("ДЕНЬ 2", True, (255,0,0))
+day3_ua = font1.render("ДЕНЬ 3", True, (255,0,0))
+day4_ua = font1.render("ДЕНЬ 4", True, (255,0,0))
+day5_ua = font1.render("ДЕНЬ 5", True, (255,0,0))
+lose_ua = font1.render("ТИ ПОМЕР", True, (255,0,0))
+won_ua = font1.render("ВІТАЮ! ТИ ПРОЙШОВ!", True, (255,0,0))
+
 hint1 = font2.render("USE SPACE TO HIDE, 'E' TO INTERACT WITH THINGS,", True, (255,0,0))
 hint2 = font2.render("W,A,S,D(k_up, k_down, k_left, k_right) TO MOVE. PRESS SPACE TO PLAY",True, (255,0,0))
-
+hint1_ua = font2.render("ВИКОРИСТОВУЙ ПРОПУСК, ЩОБ СХОВАТИСЯ", True, (255,0,0))
+#hint2_ua = font2.render("",True, (255,0,0))
+hint2_ua = font2.render("'E', ЩОБ ВЗАЄМОДІЯТИ З ОБ'ЄКТАМИW,A,S,D(СТРІЛКИ), ЩОБ РУХАТИСЬ. НАТИСНИ ПРОПУСК ДЛЯ ПОЧАТКУ",True, (255,0,0))
 while game: 
     for e in event.get(): 
         if e.type == QUIT: 
@@ -394,21 +420,42 @@ while game:
                 player.collide(refls)
                 hidden = False
     if finish != True:
-        '''
         if cover:
             window.fill((0,0,0))
-            window.blit(hint1, (100,200))
-            window.blit(hint2, (10,250))
-            display.update()
+            window.blit(choise, (200,200))
+            window.blit(choise2, (200,300))
             if e.type == KEYDOWN:
-                if e.key == K_SPACE:
+                if e.key == K_1:
+                    language = 'english'
+                    choose = True
+                elif e.key == K_2:
+                    language = 'ukrainian'
+                    choose = True
+            if choose:
+                if language == 'english':
                     window.fill((0,0,0))
-                    window.blit(day1, (500, 300))
-                    display.update()
-                    time.delay(4000)
-                    cover = False
-                    play = True
-        '''
+                    window.blit(hint1, (100,200))
+                    window.blit(hint2, (10,250))
+                    if e.type == KEYDOWN:
+                        if e.key == K_SPACE:
+                            window.fill((0,0,0))
+                            window.blit(day1, (500, 300))
+                            display.update()
+                            time.delay(4000)
+                            cover = False
+                            play = True
+                elif language == 'ukrainian':
+                    window.fill((0,0,0))
+                    window.blit(hint1_ua, (0,200))
+                    window.blit(hint2_ua, (0,250))
+                    if e.type == KEYDOWN:
+                        if e.key == K_SPACE:
+                            window.fill((0,0,0))
+                            window.blit(day1_ua, (500, 300))
+                            display.update()
+                            time.delay(4000)
+                            cover = False
+                            play = True
         if play:
             player.update() 
             murder.update(player)
@@ -447,7 +494,7 @@ while game:
                     key_sound.play() 
                     keys_down.remove(key3_down) 
                     key3_down = GameSprite("key.png", 0, 0, 0, 0, 0)
-                if sprite.collide_rect(player, door_to_up): 
+                if sprite.collide_rect(player, door_to_up) and have_key1_up: 
                     floor1 = False
                     floor2 = True 
                     player = Player('кольт.png',60,80, 1050, 40, 4)
@@ -482,19 +529,21 @@ while game:
                     if e.key == K_e:
                         if sprite.collide_rect(player, key1_up):
                             key_sound.play()
+                            have_key1_up = True
                             keys_up.remove(key1_up)
                             key1_up = GameSprite("key.png", 0, 0, 0, 0, 0)
+
                         if sprite.collide_rect(player, key2_up): 
                             key_sound.play() 
                             keys_up.remove(key2_up) 
                             key2_up = GameSprite("key.png", 0, 0, 0, 0, 0)
                 player.collide(refls_up)
                 murder.collide_something(refls_up)
-                if sprite.collide_rect(player, door_to_down):
+                if sprite.collide_rect(player, door_to_down) and have_key1_up:
                     floor2 = False 
                     floor1 = True 
                     player = Player('кольт.png',60,80, 1050, 100, 4)  
-            '''      
+            '''
             draw_step()
             
             keyPressed = pygame.key.get_pressed()
