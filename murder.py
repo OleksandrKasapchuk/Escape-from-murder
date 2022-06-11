@@ -12,8 +12,24 @@ move_l_m = True
 move_r_m = True
 moving_x = False
 moving_y = False
+
+n = []
+s = []
+w = []
+e = []
+nw = []
+ne = []
+sw = []
+se = []
 '''
-stationary = image.load(os.path.join('images/Hero', "0.png"))
+img_dir = ['n', 's', 'w', 'e', 'nw', 'ne', 'sw', 'se']
+for i in range(0, len(img_dir)):
+    img_dir[i] = [None] * 2
+    for picIndex in range(1, 2):
+        img_dir[i][picIndex] = image.load(os.path.join("hero_img, hero_+"+str(img_dir[i])+str(picIndex+1)+'.png'))
+        picIndex += 1
+        
+stationary = image.load(os.path.join('hero_img/', "0.png"))
 
 left = [None] * 10
 for picIndex in range(0,9):
@@ -24,7 +40,7 @@ for picIndex in range(0,9):
     right[picIndex] = pygame.image.load(os.path.join('images/Hero',str(picIndex+1)+'.png' ))
     picIndex +=1
 
-stepIndex = 0
+stepIndex = 2
 
 step = 10
 move_right = False
@@ -32,8 +48,8 @@ move_left = False
 
 def draw_step():
     global stepIndex
-    if stepIndex >=9:
-        stepIndex = 0
+    if stepIndex >=3:
+        stepIndex = 2
         
     if move_left:
         window.blit(left[stepIndex], (x, y))
@@ -89,6 +105,7 @@ class Player(GameSprite):
                 move_d = True
                 move_l = True
                 move_r = True
+
 class Enemy(GameSprite): 
     def update(self, target): 
         global moving_x, moving_y
@@ -112,13 +129,6 @@ class Enemy(GameSprite):
                 moving_x = False
             if target.rect.y == self.rect.y:
                 moving_y = False
-        '''
-        else:
-            self.speed = randint(-1,1)
-            self.rect.x -= self.speed
-            self.speed *= randint(-1,1)
-            self.rect.y -= self.speed
-        '''
     def collide_something(self, targets):
         global move_u_m, move_d_m, move_r_m, move_l_m
         for target in targets:
@@ -362,7 +372,7 @@ hidden = False
 language = "english"
 add_list = True
 add_list_up = True
-day = 1
+day = 5
 cover = True
 play = False
 choose = False
@@ -399,8 +409,8 @@ won_ua = font1.render("ВІТАЮ! ТИ ПРОЙШОВ!", True, (255,0,0))
 hint1 = font2.render("USE SPACE TO HIDE, 'E' TO INTERACT WITH THINGS,", True, (255,0,0))
 hint2 = font2.render("W,A,S,D(k_up, k_down, k_left, k_right) TO MOVE. PRESS SPACE TO PLAY",True, (255,0,0))
 hint1_ua = font2.render("ВИКОРИСТОВУЙ ПРОПУСК, ЩОБ СХОВАТИСЯ", True, (255,0,0))
-#hint2_ua = font2.render("",True, (255,0,0))
-hint2_ua = font2.render("'E', ЩОБ ВЗАЄМОДІЯТИ З ОБ'ЄКТАМИW,A,S,D(СТРІЛКИ), ЩОБ РУХАТИСЬ. НАТИСНИ ПРОПУСК ДЛЯ ПОЧАТКУ",True, (255,0,0))
+hint2_ua = font2.render("'E', ЩОБ ВЗАЄМОДІЯТИ З ОБ'ЄКТАМИ, W,A,S,D(СТРІЛКИ), ЩОБ РУХАТИСЬ.",True, (255,0,0))
+hint3_ua = font2.render("НАТИСНИ ПРОПУСК ДЛЯ ПОЧАТКУ",True, (255,0,0))
 while game: 
     for e in event.get(): 
         if e.type == QUIT: 
@@ -446,8 +456,9 @@ while game:
                             play = True
                 elif language == 'ukrainian':
                     window.fill((0,0,0))
-                    window.blit(hint1_ua, (0,200))
+                    window.blit(hint1_ua, (150,200))
                     window.blit(hint2_ua, (0,250))
+                    window.blit(hint3_ua, (250, 300))
                     if e.type == KEYDOWN:
                         if e.key == K_SPACE:
                             window.fill((0,0,0))
@@ -460,6 +471,7 @@ while game:
             player.update() 
             murder.update(player)
             window.blit(background, (0, 0))
+
             if floor1:
                 carpet.reset()
                 for wall in walls:
@@ -482,31 +494,37 @@ while game:
                 murder.reset()
                 if e.type == KEYDOWN:
                     if e.key == K_e:
-                        if sprite.collide_rect(player, key1_down): 
+                        if sprite.collide_rect(player, key1_down):
+                            have_key1_down = True 
                             key_sound.play() 
                             keys_down.remove(key1_down) 
                             key1_down = GameSprite("key.png", 0, 0, 0, 0, 0) 
-                        if sprite.collide_rect(player, key2_down): 
+                        if sprite.collide_rect(player, key2_down):
+                            have_key2_down = True 
                             key_sound.play() 
                             keys_down.remove(key2_down) 
                             key2_down = GameSprite("key.png", 0, 0, 0, 0, 0) 
-                if sprite.collide_rect(player, key3_down): 
-                    key_sound.play() 
-                    keys_down.remove(key3_down) 
-                    key3_down = GameSprite("key.png", 0, 0, 0, 0, 0)
+                        if sprite.collide_rect(player, key3_down): 
+                            have_key3_down = True
+                            key_sound.play() 
+                            keys_down.remove(key3_down) 
+                            key3_down = GameSprite("key.png", 0, 0, 0, 0, 0)
                 if sprite.collide_rect(player, door_to_up) and have_key1_up: 
                     floor1 = False
                     floor2 = True 
                     player = Player('кольт.png',60,80, 1050, 40, 4)
 
-                if sprite.collide_rect(player, door_main): 
+                if sprite.collide_rect(player, door_main) and have_key2_up: 
                     window.fill((0,0,0)) 
-                    window.blit(won, (150, 300)) 
+                    if language == "english":
+                        window.blit(won, (500, 300))   
+                    elif language == "ukrainian":
+                        window.blit(won_ua, (500, 300))
                     display.update()
                     happy.play()
                     time.delay(3000)
                     mixer.music.load("ending.ogg")
-                    mixer.music.    play() 
+                    mixer.music.play() 
                     finish = True
             elif floor2:
                 for wall in walls_up:
@@ -533,7 +551,8 @@ while game:
                             keys_up.remove(key1_up)
                             key1_up = GameSprite("key.png", 0, 0, 0, 0, 0)
 
-                        if sprite.collide_rect(player, key2_up): 
+                        if sprite.collide_rect(player, key2_up):
+                            have_key2_up = True 
                             key_sound.play() 
                             keys_up.remove(key2_up) 
                             key2_up = GameSprite("key.png", 0, 0, 0, 0, 0)
@@ -543,29 +562,11 @@ while game:
                     floor2 = False 
                     floor1 = True 
                     player = Player('кольт.png',60,80, 1050, 100, 4)  
-            '''
-            draw_step()
             
-            keyPressed = pygame.key.get_pressed()
-            if keyPressed[pygame.K_LEFT]  and x > 0:
-                x -= step*2
-                move_left = True
-                move_right = False
-            elif keyPressed[pygame.K_RIGHT]  and x < width:
-                x +=step*2
-                move_left = False
-                move_right = True
-            else:
-                move_right = False
-                move_left = False
-                stepIndex = 0
-            ''' 
-            '''
             if sprite.collide_rect(player, door1):
                 door1 = Wall(81, 49, 0, door1.rect.x, door1.rect.y, door1.height, door1.width)
                 display.update()
-                time.delay(2000)
-            '''
+            
             if sprite.collide_rect(player, murder) and not hidden:  
                 day += 1 
                 scream.play()   
@@ -575,34 +576,35 @@ while game:
                 murder = Enemy('murder.png',50, 45,625,275, 2)
                 moving_x = False
                 moving_y = False
+                window.fill((0,0,0))
                 if day == 2:
-                    window.fill((0,0,0))
-                    window.blit(day2, (500, 300))
-                    player.rect.x -= 100
-                    display.update()
-                    time.delay(4000)
-                    
+                    if language == "english":
+                        window.blit(day2, (500, 300))   
+                    elif language == "ukrainian":
+                        window.blit(day2_ua, (500, 300)) 
                 elif day == 3:
-                    window.fill((0,0,0))
-                    window.blit(day3, (500, 300))
-                    player.rect.x -= 100
-                    display.update()
-                    time.delay(4000)
+                    if language == "english":
+                        window.blit(day3, (500, 300))   
+                    elif language == "ukrainian":
+                        window.blit(day3_ua, (500, 300))    
                 elif day == 4:
-                    window.fill((0,0,0))
-                    window.blit(day4, (500, 300))
-                    player.rect.x -= 100
-                    display.update()
-                    time.delay(4000)
+                    if language == "english":
+                        window.blit(day4, (500, 300))   
+                    elif language == "ukrainian":
+                        window.blit(day4_ua, (500, 300))
                 elif day == 5:
+                    if language == "english":
+                        window.blit(day5, (500, 300))   
+                    elif language == "ukrainian":
+                        window.blit(day5_ua, (500, 300))
+                display.update()
+                time.delay(4000)
+                if day == 6:
                     window.fill((0,0,0))
-                    window.blit(day5, (500, 300))
-                    player.rect.x -= 100
-                    display.update()
-                    time.delay(4000)
-                elif day == 6:
-                    window.fill((0,0,0))
-                    window.blit(lose, (500, 300))
+                    if language == "english":
+                        window.blit(lose, (500, 300))   
+                    elif language == "ukrainian":
+                        window.blit(lose_ua, (500, 300))
                     display.update()
                     mixer.music.load("last.mp3")
                     mixer.music.play()
